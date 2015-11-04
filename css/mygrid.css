@@ -1,0 +1,48 @@
+div.mygrid{
+	overflow: hidden;	
+}
+div.mygrid  table, div.mygrid table tbody, div.mygrid table td,  div.mygrid table th {
+	table-layout: fixed;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+	width:auto;
+}
+div.mygrid > table{
+	width:100%;
+}
+		
+div.mygrid  div.mygrid-header {
+	width:100%;
+}
+div.mygrid  div.mygrid-header > div.mygrid-header-inner{
+	position: relative;
+}
+
+div.mygrid  div.mygrid-header > div.mygrid-header-inner > table {
+	table-layout: fixed;		
+	width:100%;
+}
+div.mygrid  div.mygrid-header > div.mygrid-header-inner > table > thead > tr > th {
+	border:1px solid black;
+}
+
+div.mygrid  div.mygrid-body{
+	width:100%;	
+}
+div.mygrid  div.mygrid-body{
+	overflow-y:scroll;
+}
+div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll{
+	position: relative;
+}
+
+div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table{
+	table-layout: fixed;	
+	width:100%;
+}
+
+div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table > tbody > tr > td{
+	border:1px solid black;	
+}
+
+		

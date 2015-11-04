@@ -1,0 +1,85 @@
+<!doctype html>
+<html ng-app="myApp">
+    <head>
+        <title>Angular Test</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=EDGE"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/mygrid.css"/>
+        <style type="text/css">
+         /* body > table > tbody > tr > td {
+            vertical-align: top;
+            text-align: left;
+          } */
+        </style>
+        <!-- script src="libs/d3.js"></script -->
+        
+        <script src="data/olympicAthletes.js"></script>
+        <script src="libs/numeral.js"></script>
+
+        <!-- link rel="stylesheet" href="css/bootstrap.css"/>
+        <link rel="stylesheet" href="css/normalize.css"/>
+        <script type="text/javascript" src="js/lib/less.js"></script>
+        <script type="text/javascript" src="js/lib/modernizr.js"></script -->
+        
+        <!-- script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script -->
+
+        <script src="js/mygridDefs.js"></script>
+        <script src="js/mygrid.js"></script>
+        <script>
+            function dateComparator(){}
+            
+            var columnDefs = [
+                {headerName: "Athlete", field: "athlete", width: '150px', sort: 'desc'},
+                {headerName: "Age", field: "age", width: '90px'},
+                {headerName: "Country", field: "country", width: '120px'},
+                {headerName: "Year", field: "year", width: '90px', unSortIcon: true},
+                {headerName: "Date", field: "date", width: '110px', comparator: dateComparator},
+                {headerName: "Sport", field: "sport", width: '110px'},
+                {headerName: "Gold", field: "gold", width: '100px'},
+                {headerName: "Silver", field: "silver", width: '100px'},
+                {headerName: "Bronze", field: "bronze", width: '100px'},
+                {headerName: "Total", field: "total", width: '100px'}
+            ];
+            
+            // var rowData = [
+            //     {make: "Toyota", model: "Celica", price: 35000,trim:'ELdfgdfgdfg'},
+            //     {make: "Ford", model: "Mondeo", price: 32000,trim:'ELdfgdfgdfg'},
+            //     {make: "Porsche", model: "Boxter", price: 72000,trim:'ELdfgdfgdfg'},
+            //     {make: "Honda", model: "Prelude", price: 35000,trim:'ELdfgdfgdfg'},
+            //     {make: "Bugatti", model: "Veyron", price: 32000,trim:'ELdfgdfgdfg'},
+            //     {make: "Vokswage", model: "Jetta", price: 72000,trim:'ELdfgdfgdfg'}
+            // ];
+            
+            var gridOptions = {
+                columnDefs: columnDefs,
+                rowData: [],
+                width:'500px',
+                height:'400px',
+                pinnedLeftCount:1,
+                onReady:function(api){
+                    api.setDataRow( olympicAthletes );
+                }
+            };
+            
+            // wait for the document to be loaded, otherwise
+            document.addEventListener("DOMContentLoaded", function() {
+                new Grid('#mygrid-test', gridOptions);
+                // var grid = new Grid('#mygrid-test', gridOptions);
+                // gridOptions.api.setDataRow( olympicAthletes );
+                
+            });
+            
+            
+        </script>
+
+
+
+    </head>
+    <body>
+       This is My grid
+       <div id="mygrid-test"  class="ag-fresh"></div>
+
+
+
+    </body>
+</html>
