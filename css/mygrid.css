@@ -29,7 +29,7 @@ div.mygrid  div.mygrid-header > div.mygrid-header-inner > table > thead > tr > t
 div.mygrid  div.mygrid-body{
 	width:100%;	
 }
-div.mygrid  div.mygrid-body{
+div.mygrid div.mygrid-center div.mygrid-body{
 	overflow-y:scroll;
 }
 div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll{

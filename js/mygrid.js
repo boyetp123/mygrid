@@ -92,10 +92,17 @@ var Grid = (function () {
         var totalLeftWidth = 0;
         if (pinnedLeftCount > 0) {
             this.theGridTdLeftPane.style.display = 'table-cell';
-            for (var i = 0; i < pinnedLeftCount - 1; i++) {
+            for (var i = 0; i < pinnedLeftCount; i++) {
                 totalLeftWidth = Number(this.columnDefs[i].width.replace('px', '').replace('%', ''));
             }
+            this.theGridTdLeftPane.style.width = (totalLeftWidth) + 'px';
+            this.theGridLeft.style.width = (totalLeftWidth) + 'px';
+            this.headerContainerLeft.style.width = (totalLeftWidth) + 'px';
+            this.bodyContainerLeft.style.width = (totalLeftWidth) + 'px';
         }
+        this.theGridTdCenterPane.style.width = (totalLeftWidth) + 'px';
+        this.theGridCenter.style.width = (totalGridWidth - totalLeftWidth) + 'px';
+        this.headerContainerCenter.style.width = (totalGridWidth - totalLeftWidth) + 'px';
         this.bodyContainerCenter.style.width = (totalGridWidth - totalLeftWidth) + 'px';
     };
     Grid.prototype.setUpProperties = function (gridOptions) {
