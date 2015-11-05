@@ -91,7 +91,7 @@ var Grid = (function () {
         var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
         var totalLeftWidth = 0;
         if (pinnedLeftCount > 0) {
-            this.theGridTdLeftPane.style.display = 'table-cell';
+            this.theGridTdLeftPane.style.display = '';
             for (var i = 0; i < pinnedLeftCount; i++) {
                 totalLeftWidth = Number(this.columnDefs[i].width.replace('px', '').replace('%', ''));
             }
@@ -151,11 +151,14 @@ var Grid = (function () {
         }
         return '<th style="' + styleArr.join(';') + '" col-idx="' + colIdx + '">' + (colDef.headerName || colDef.field) + '</th>';
     };
-    Grid.prototype.createDataCell = function (row, colDef, rowIndex, colIndex) {
+    Grid.prototype.createDataCell = function (row, colDef, rowIndex, colIndex, isFirst) {
         var val = row[colDef.field];
         var styleArr = [];
         if (colDef.width) {
             styleArr.push('width:' + colDef.width + '');
+        }
+        if (isFirst && this.gridOptions.rowHeight) {
+            styleArr.push('height:' + this.gridOptions.rowHeight);
         }
         if (colDef.hasOwnProperty('cellFormatter') && typeof (colDef.cellFormatter) == 'function') {
             var params = {
@@ -176,7 +179,7 @@ var Grid = (function () {
         // 	return this.createDataCell(row, colDef, rowIndex, colIndex);
         // },this).join('');
         var styleArr = [];
-        styleArr.push('height:' + this.gridOptions.rowHeight);
+        // styleArr.push('height:'+this.gridOptions.rowHeight);
         // return '<tr style="'+styleArr.join(';')+'" r-idx="'+rowIndex+'">' + rowStr +'</tr>';
         var arrCenter = [];
         var arrLeft = [];
@@ -184,11 +187,12 @@ var Grid = (function () {
         var returnObj = {};
         var rowStr = '';
         this.columnDefs.forEach(function (colDef, colIdx) {
-            rowStr = _this.createDataCell(row, colDef, rowIndex, colIdx);
             if (pinnedLeftCount - 1 >= colIdx) {
+                rowStr = _this.createDataCell(row, colDef, rowIndex, colIdx, colIdx === 0);
                 arrLeft.push(rowStr);
             }
             else {
+                rowStr = _this.createDataCell(row, colDef, rowIndex, colIdx, (colIdx - pinnedLeftCount) === 0);
                 arrCenter.push(rowStr);
             }
         }, this);
@@ -199,6 +203,38 @@ var Grid = (function () {
             returnObj.left = '<tr style="' + styleArr.join(';') + '" r-idx="' + rowIndex + '">' + arrLeft.join('') + '</tr>';
         }
         return returnObj;
+    };
+    Grid.prototype.equalizeBodyHeights = function () {
+        var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+        var tableBodyLeft = this.tableBodyLeft;
+        var tableBodyCenter = this.tableBodyCenter;
+        var trsLeft = tableBodyLeft.querySelectorAll('tbody > tr');
+        var trsCenter = tableBodyCenter.querySelectorAll('tbody > tr');
+        var len = 200; // trsLeft.length;
+        // return;
+        // debugger;
+        setTimeout(function () {
+            for (var i = 0; i < len; i++) {
+                var tdleft = trsLeft.item(i).children[0];
+                var tdCenter = trsCenter.item(i).children[0];
+                if (tdleft && tdCenter) {
+                    var maxHeight = Math.max(tdCenter.offsetHeight, tdCenter.offsetHeight);
+                    tdleft.style.height = tdCenter.style.height = maxHeight + 'px';
+                }
+            }
+        }, 20);
+        // for(let i =0 ; i < len ; i++){
+        // 	let ltr = trsLeft.item(i);
+        // 	let lftd = ltr.children[0]; // querySelector('td:first');
+        // 	let rIdx = ltr.getAttribute('r-idx');
+        // 	let centerTr = tableBodyCenter.querySelector('tbody > tr[r-idx="'+ rIdx+'"]');
+        // 	let cfTd = centerTr.children[0]; //.querySelector('td:first');
+        // 	if (cfTd && lftd){
+        // 		let maxHeight = Math.max( cfTd.offsetHeight , lftd.offsetHeight );
+        // 		cfTd.style.height =  lftd.style.height = maxHeight + 'px';
+        // 	}
+        // 	console.info('equalizeBodyHeights i = ' + i + ' of  ' + len);
+        // }
     };
     Grid.prototype.createBodyData = function () {
         var _this = this;
@@ -220,18 +256,9 @@ var Grid = (function () {
             this.tableBodyLeft.innerHTML = arrLeft.join('');
         }
         this.tableBodyCenter.innerHTML = arrCenter.join('');
+        // this.equalizeBodyHeights();
     };
     Grid.prototype.alignHeadersAndDataCells = function () {
-        // var thNodes = this.tableHeaderCenter.querySelectorAll('th');
-        // let len = thNodes.length;
-        // for (let i = 0; i< len;i++){
-        // 	let thNode = thNodes.item(i);
-        //     let colIdx:string = thNode.getAttribute('col-idx');
-        // 	let tdNode = this.tableBodyCenter.querySelector('td[col-idx="'+colIdx+'"]');
-        // 	let maxWidth = Math.max(thNode.offsetWidth, tdNode.offsetWidth);
-        // 	thNode.style.width = maxWidth+'px';
-        // 	tdNode.style.width = maxWidth+'px';
-        // }
         this.columnDefs.forEach(function (columnDef, idx, arr) {
             if (columnDef.width === 'auto') {
                 var th = this.tableHeaderCenter.querySelector('th[col-idx="' + idx + '"]');
@@ -258,14 +285,23 @@ var Grid = (function () {
     };
     Grid.prototype.setEvents = function () {
         var currentLeft = 0;
+        var currentTop = 0;
         var headerContainerInner = this.headerContainerInnerCenter;
-        this.bodyContainerCenter.addEventListener("scroll", function (event) {
-            var scrollLeft = event.target.scrollLeft;
+        var bodyContainerYscrollLeft = this.bodyContainerYscrollLeft;
+        // var bodyContainerYscrollLeft = this.bodyContainerLeft;
+        var onScrollEvent = function (event) {
+            var scrollLeft = event.currentTarget.scrollLeft;
+            var scrollTop = event.currentTarget.scrollTop;
             if (currentLeft !== scrollLeft) {
                 currentLeft = scrollLeft;
                 headerContainerInner.style.left = (scrollLeft * -1) + 'px';
             }
-        });
+            if (currentTop !== scrollTop) {
+                currentTop = scrollTop;
+                bodyContainerYscrollLeft.style.top = (scrollTop * -1) + 'px';
+            }
+        };
+        this.bodyContainerCenter.addEventListener("scroll", onScrollEvent.bind(this));
     };
     return Grid;
 })();

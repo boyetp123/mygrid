@@ -2,10 +2,11 @@ div.mygrid{
 	overflow: hidden;	
 }
 div.mygrid  table, div.mygrid table tbody, div.mygrid table td,  div.mygrid table th {
-	table-layout: fixed;
+	table-layout: auto;
 	padding: 0 0 0 0;
 	margin: 0 0 0 0;
 	width:auto;
+	border:none;
 }
 div.mygrid > table{
 	width:100%;

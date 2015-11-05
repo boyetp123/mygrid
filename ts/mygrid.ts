@@ -126,7 +126,7 @@ class Grid {
 		let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
 		let totalLeftWidth = 0;		
 		if (pinnedLeftCount > 0){
-			this.theGridTdLeftPane.style.display = 'table-cell';
+			this.theGridTdLeftPane.style.display = '';
 			for(let i = 0; i <pinnedLeftCount ; i++){
 				totalLeftWidth = Number(this.columnDefs[i].width.replace('px','').replace('%',''));
 			}
@@ -203,12 +203,15 @@ class Grid {
 		
 		return '<th style="' +styleArr.join(';')+ '" col-idx="'+colIdx+'">'+ (colDef.headerName || colDef.field) +'</th>';
 	}	
-	createDataCell(row:Object, colDef:ColumnDef, rowIndex:number, colIndex:number){
+	createDataCell(row:Object, colDef:ColumnDef, rowIndex:number, colIndex:number, isFirst:boolean){
 		let val =row[ <string>colDef.field ];
 		let styleArr:Array<string>=[];
 		if (colDef.width){
 			styleArr.push('width:'+colDef.width + '');
-		}			
+		}
+		if (isFirst && this.gridOptions.rowHeight){
+			styleArr.push('height:'+this.gridOptions.rowHeight);
+		}
 				
 		if (colDef.hasOwnProperty('cellFormatter') && typeof(colDef.cellFormatter) == 'function' ){
 			let params = {
@@ -228,7 +231,7 @@ class Grid {
 		// 	return this.createDataCell(row, colDef, rowIndex, colIndex);
 		// },this).join('');
 		let styleArr:Array<string> = [];
-		styleArr.push('height:'+this.gridOptions.rowHeight);
+		// styleArr.push('height:'+this.gridOptions.rowHeight);
 		// return '<tr style="'+styleArr.join(';')+'" r-idx="'+rowIndex+'">' + rowStr +'</tr>';
 		
 		let arrCenter:Array<string> = [];
@@ -238,10 +241,11 @@ class Grid {
 		let rowStr:string='';
 
 		this.columnDefs.forEach((colDef, colIdx)=>{
-			rowStr = this.createDataCell(row, colDef, rowIndex, colIdx);			
 			if (pinnedLeftCount - 1 >= colIdx){
+				rowStr = this.createDataCell(row, colDef, rowIndex, colIdx , colIdx === 0);			
 				arrLeft.push( rowStr );
 			} else {
+				rowStr = this.createDataCell(row, colDef, rowIndex, colIdx , (colIdx - pinnedLeftCount) === 0 );			
 				arrCenter.push( rowStr );
 			}
 		},this);
@@ -253,6 +257,42 @@ class Grid {
 			returnObj.left ='<tr style="'+styleArr.join(';')+'" r-idx="'+rowIndex+'">' + arrLeft.join('') +'</tr>';
 		}
 		return 	returnObj;	
+	}
+	equalizeBodyHeights(){
+		let pinnedLeftCount = this.gridOptions.pinnedLeftCount
+		let tableBodyLeft = this.tableBodyLeft;
+		let tableBodyCenter = this.tableBodyCenter;
+		let trsLeft = tableBodyLeft.querySelectorAll('tbody > tr');
+		let trsCenter = tableBodyCenter.querySelectorAll('tbody > tr');
+		let len = 200; // trsLeft.length;
+		// return;
+		// debugger;
+		setTimeout(function(){
+			for(let i=0; i < len; i++){
+				let tdleft = trsLeft.item(i).children[0];
+				let tdCenter = trsCenter.item(i).children[0];
+				
+				if (tdleft && tdCenter){
+					let maxHeight = Math.max( tdCenter.offsetHeight , tdCenter.offsetHeight );
+					tdleft.style.height =  tdCenter.style.height = maxHeight + 'px';
+				}			
+			}
+			
+		},20);
+		
+		
+		// for(let i =0 ; i < len ; i++){
+		// 	let ltr = trsLeft.item(i);
+		// 	let lftd = ltr.children[0]; // querySelector('td:first');
+		// 	let rIdx = ltr.getAttribute('r-idx');
+		// 	let centerTr = tableBodyCenter.querySelector('tbody > tr[r-idx="'+ rIdx+'"]');
+		// 	let cfTd = centerTr.children[0]; //.querySelector('td:first');
+		// 	if (cfTd && lftd){
+		// 		let maxHeight = Math.max( cfTd.offsetHeight , lftd.offsetHeight );
+		// 		cfTd.style.height =  lftd.style.height = maxHeight + 'px';
+		// 	}
+		// 	console.info('equalizeBodyHeights i = ' + i + ' of  ' + len);
+		// }
 	}
 	createBodyData(){
 		let arrCenter:Array<string> = [];
@@ -269,27 +309,14 @@ class Grid {
 					arrLeft.push(obj.left)
 				}
 			},this);			
-			// arrCenter = this.gridOptions.rowData.map((row:Object, rowIndex:number)=>{
-			// 	return this.createDataRow(row, rowIndex);
-			// },this);
 		}
 		if (arrLeft.length > 0){
-			this.tableBodyLeft.innerHTML =arrLeft.join('')
+			this.tableBodyLeft.innerHTML =arrLeft.join('');
 		}
-		this.tableBodyCenter.innerHTML =arrCenter.join('')
+		this.tableBodyCenter.innerHTML =arrCenter.join('');
+		// this.equalizeBodyHeights();
 	}
-	alignHeadersAndDataCells(){
-		// var thNodes = this.tableHeaderCenter.querySelectorAll('th');
-		// let len = thNodes.length;
-		// for (let i = 0; i< len;i++){
-		// 	let thNode = thNodes.item(i);
-        //     let colIdx:string = thNode.getAttribute('col-idx');
-		// 	let tdNode = this.tableBodyCenter.querySelector('td[col-idx="'+colIdx+'"]');
-		// 	let maxWidth = Math.max(thNode.offsetWidth, tdNode.offsetWidth);
-		// 	thNode.style.width = maxWidth+'px';
-		// 	tdNode.style.width = maxWidth+'px';
-		// }
-		
+	alignHeadersAndDataCells(){		
 		this.columnDefs.forEach(function(columnDef, idx, arr){
 			if (columnDef.width === 'auto'){
 				let th = this.tableHeaderCenter.querySelector('th[col-idx="'+idx+'"]');
@@ -299,10 +326,7 @@ class Grid {
 				let maxWidth = Math.max(th.offsetWdth, td.offsetWdth);
 				td.style.width = th.style.width = maxWidth + 'px';
 			}
-			
 		});	
-		
-		
 	}
 	render(){
 		this.createHeader();
@@ -321,15 +345,26 @@ class Grid {
 	}
 	setEvents(){
 		let currentLeft = 0;
+		let currentTop = 0;
 		var headerContainerInner = this.headerContainerInnerCenter;
-		this.bodyContainerCenter.addEventListener("scroll", function(event) {
-			let scrollLeft = event.target.scrollLeft;
+		var bodyContainerYscrollLeft = this.bodyContainerYscrollLeft;
+		// var bodyContainerYscrollLeft = this.bodyContainerLeft;
+		
+		var onScrollEvent = function(event) {
+			let scrollLeft = event.currentTarget.scrollLeft;
+			let scrollTop = event.currentTarget.scrollTop;
 			
-			if (currentLeft !== scrollLeft ){
+			if ( currentLeft !== scrollLeft ){
 				currentLeft = scrollLeft;
 				headerContainerInner.style.left = (scrollLeft  * -1 ) + 'px';				
 			}
-		}); 
+			if ( currentTop !== scrollTop ){
+				currentTop = scrollTop;
+				bodyContainerYscrollLeft.style.top = (scrollTop  * -1 ) + 'px';		
+				// console.info('scrollTop = ',scrollTop, bodyContainerYscrollLeft.scrollTop);
+			}
+		}
+		this.bodyContainerCenter.addEventListener("scroll",onScrollEvent.bind(this)); 
 	}
 		
 }

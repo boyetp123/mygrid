@@ -34,7 +34,7 @@
                 {headerName: "Country", field: "country", width: '120px'},
                 {headerName: "Year", field: "year", width: '90px', unSortIcon: true},
                 {headerName: "Date", field: "date", width: '110px', comparator: dateComparator},
-                {headerName: "Sport", field: "sport", width: '110px'},
+                {headerName: "Sport", field: "sport", width: '200px'},
                 {headerName: "Gold", field: "gold", width: '100px'},
                 {headerName: "Silver", field: "silver", width: '100px'},
                 {headerName: "Bronze", field: "bronze", width: '100px'},
@@ -55,6 +55,7 @@
                 rowData: [],
                 width:'500px',
                 height:'400px',
+                rowHeight:'40px',
                 pinnedLeftCount:1,
                 onReady:function(api){
                     api.setDataRow( olympicAthletes );
