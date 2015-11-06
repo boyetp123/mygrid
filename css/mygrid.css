@@ -15,6 +15,15 @@ div.mygrid > table{
 div.mygrid  div.mygrid-header {
 	width:100%;
 }
+
+div.mygrid div.mygrid-center div.mygrid-header {
+	overflow: hidden;
+}
+
+div.mygrid-left div.mygrid-body{
+	overflow: hidden;
+}
+
 div.mygrid  div.mygrid-header > div.mygrid-header-inner{
 	position: relative;
 }
