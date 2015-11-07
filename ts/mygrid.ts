@@ -231,9 +231,12 @@ class Grid {
 			let params = {
 				data:row,
 				rowIndex:rowIndex,
-				colIndex:colIndex
+				colIndex:colIndex,
+				classes : classArr,
+				colDef:colDef
 			};
 			val = colDef.cellFormatter(params);
+			classArr = params.classes;
 		} else if (colDef.type === 'number') {
 			val = numeral(val).format( colDef.format || '0,0.0000');
 		} else if (colDef.type === 'date') {
