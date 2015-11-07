@@ -1,14 +1,36 @@
-// interface IColumnDef{
-// 	field: string,
-// 	headerName?: string, 
-// 	type?:string ,
-// 	numberFormat?:string,
-// 	cellFormatter?:Function,
-// 	sortable?:boolean,
-// 	width?:any,    // string like '100px' or '100%' or auto
-// 	headerClass?:any,  // string or function that return string
-// 	cellClass?:any   // string or function that return string
-// }
+/*
+interface Map<K, V> {
+    clear(): void;
+    delete(key: K): boolean;
+    // entries(): IterableIterator<[K, V]>;
+    forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg?: any): void;
+    get(key: K): V;
+    has(key: K): boolean;
+    // keys(): IterableIterator<K>;
+    set(key: K, value?: V): Map<K, V>;
+    size: number;
+    // values(): IterableIterator<V>;
+    // [Symbol.iterator]():IterableIterator<[K,V]>;
+    // [Symbol.toStringTag]: string;
+}
+
+interface MapConstructor {
+    new <K, V>(): Map<K, V>;
+    // new <K, V>(iterable: Iterable<[K, V]>): Map<K, V>;
+    prototype: Map<any, any>;
+}
+declare var Map: MapConstructor;
+
+var AlignmentClasses = new Map();
+AlignmentClasses.set("NUMBER",'text-right');
+AlignmentClasses.set("TEXT",'text-left');
+AlignmentClasses.set("DATE",'text-center');
+*/
+var AlignmentClasses = {
+    NUMBER: 'text-right',
+    TEXT: 'text-left',
+    DATE: 'text-center'
+};
 var ColumnDef = (function () {
     function ColumnDef(field, headerName, type, format, cellFormatter, sortable, width, headerClass, cellClass) {
         if (type === void 0) { type = 'text'; }

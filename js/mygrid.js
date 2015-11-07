@@ -112,6 +112,7 @@ var Grid = (function () {
         this.gridOptions.rowHeight = gridOptions.rowHeight || '30px';
         this.gridOptions.pinnedLeftCount = gridOptions.pinnedLeftCount || 0;
         this.gridOptions.pinnedRightCount = gridOptions.pinnedRightCount || 0;
+        this.gridOptions.flexRow = gridOptions.flexRow || false;
     };
     Grid.prototype.setUpAPI = function () {
         this.gridOptions.api = {
@@ -146,20 +147,28 @@ var Grid = (function () {
     };
     Grid.prototype.createHeaderCell = function (colDef, colIdx) {
         var styleArr = [];
+        var classArr = [];
         if (colDef.width) {
             styleArr.push('width:' + colDef.width + '');
         }
-        return '<th style="' + styleArr.join(';') + '" col-idx="' + colIdx + '">' + (colDef.headerName || colDef.field) + '</th>';
+        classArr.push(AlignmentClasses[colDef.type.toUpperCase()]);
+        return '<th class="' + classArr.join(' ') + '" style="' + styleArr.join(';') + '" col-idx="' + colIdx + '">' +
+            '<div style="' + styleArr.join(';') + '" >' +
+            (colDef.headerName || colDef.field) +
+            '</div>' +
+            '</th>';
     };
     Grid.prototype.createDataCell = function (row, colDef, rowIndex, colIndex, isFirst) {
         var val = row[colDef.field];
         var styleArr = [];
+        var classArr = [];
         if (colDef.width) {
             styleArr.push('width:' + colDef.width + '');
         }
         if (isFirst && this.gridOptions.rowHeight) {
             styleArr.push('height:' + this.gridOptions.rowHeight);
         }
+        classArr.push(AlignmentClasses[colDef.type.toUpperCase()]);
         if (colDef.hasOwnProperty('cellFormatter') && typeof (colDef.cellFormatter) == 'function') {
             var params = {
                 data: row,
@@ -171,16 +180,15 @@ var Grid = (function () {
         else if (colDef.type === 'number') {
             val = numeral(val).format(colDef.format || '0,0.0000');
         }
-        return '<td style="' + styleArr.join(';') + '" col-idx="' + colIndex + '">' + val + '</td>';
+        return '<td class="' + classArr.join(' ') + '" style="' + styleArr.join(';') + '" col-idx="' + colIndex + '">' +
+            '<div style="' + styleArr.join(';') + '">' +
+            val +
+            '</div>' +
+            '</td>';
     };
     Grid.prototype.createDataRow = function (row, rowIndex) {
         var _this = this;
-        // let rowStr:string = this.columnDefs.map((colDef:ColumnDef, colIndex)=>{
-        // 	return this.createDataCell(row, colDef, rowIndex, colIndex);
-        // },this).join('');
         var styleArr = [];
-        // styleArr.push('height:'+this.gridOptions.rowHeight);
-        // return '<tr style="'+styleArr.join(';')+'" r-idx="'+rowIndex+'">' + rowStr +'</tr>';
         var arrCenter = [];
         var arrLeft = [];
         var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
@@ -208,49 +216,61 @@ var Grid = (function () {
         var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
         var tableBodyLeft = this.tableBodyLeft;
         var tableBodyCenter = this.tableBodyCenter;
+        var tdsLeft = Array.prototype.slice.call(this.tableBodyLeft.querySelectorAll('tbody > tr > td'), 0);
+        var tdsCenter = Array.prototype.slice.call(this.tableBodyCenter.querySelectorAll('tbody > tr > td'), 0);
+        var len = 200; // trsLeft.length;
+        var startTime = (new Date()).getTime();
+        for (var i = 0; i < len; i++) {
+            var tdleft = tdsLeft[i];
+            var tdCenter = tdsCenter[i];
+            var lH = tdleft.offsetHeight;
+            var cH = tdCenter.offsetHeight;
+            if (tdleft && tdCenter && lH !== cH) {
+                var maxHeight = Math.max(cH, lH);
+                tdleft.style.height = tdCenter.style.height = maxHeight + 'px';
+            }
+        }
+        var endTime = (new Date()).getTime();
+        console.info('using array total time for ' + len + ' records ' + ((endTime - startTime) / 1000) + ' secs');
+    };
+    Grid.prototype.equalizeBodyHeights1 = function () {
+        var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+        var tableBodyLeft = this.tableBodyLeft;
+        var tableBodyCenter = this.tableBodyCenter;
         var trsLeft = tableBodyLeft.querySelectorAll('tbody > tr');
         var trsCenter = tableBodyCenter.querySelectorAll('tbody > tr');
         var len = 200; // trsLeft.length;
         // return;
         // debugger;
-        setTimeout(function () {
-            for (var i = 0; i < len; i++) {
-                var tdleft = trsLeft.item(i).children[0];
-                var tdCenter = trsCenter.item(i).children[0];
-                if (tdleft && tdCenter) {
-                    var maxHeight = Math.max(tdCenter.offsetHeight, tdCenter.offsetHeight);
-                    tdleft.style.height = tdCenter.style.height = maxHeight + 'px';
-                }
+        var startTime = (new Date()).getTime();
+        for (var i = 0; i < len; i++) {
+            var tdleft = trsLeft.item(i).children[0];
+            var tdCenter = trsCenter.item(i).children[0];
+            var lH = tdleft.offsetHeight;
+            var cH = tdCenter.offsetHeight;
+            if (tdleft && tdCenter && lH !== cH) {
+                var maxHeight = Math.max(cH, lH);
+                tdleft.style.height = tdCenter.style.height = maxHeight + 'px';
             }
-        }, 20);
-        // for(let i =0 ; i < len ; i++){
-        // 	let ltr = trsLeft.item(i);
-        // 	let lftd = ltr.children[0]; // querySelector('td:first');
-        // 	let rIdx = ltr.getAttribute('r-idx');
-        // 	let centerTr = tableBodyCenter.querySelector('tbody > tr[r-idx="'+ rIdx+'"]');
-        // 	let cfTd = centerTr.children[0]; //.querySelector('td:first');
-        // 	if (cfTd && lftd){
-        // 		let maxHeight = Math.max( cfTd.offsetHeight , lftd.offsetHeight );
-        // 		cfTd.style.height =  lftd.style.height = maxHeight + 'px';
-        // 	}
-        // 	console.info('equalizeBodyHeights i = ' + i + ' of  ' + len);
-        // }
+        }
+        var endTime = (new Date()).getTime();
+        console.info('direct total time for ' + len + ' records ' + ((endTime - startTime) / 1000) + ' secs');
     };
     Grid.prototype.createBodyData = function () {
-        var _this = this;
         var arrCenter = [];
         var arrLeft = [];
         var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
         if (this.gridOptions.rowData.length > 0) {
-            this.gridOptions.rowData.forEach(function (row, rowIndex) {
-                var obj = _this.createDataRow(row, rowIndex);
+            for (var rowIndex = 0; rowIndex < 200; rowIndex++) {
+                // let row = this.gridOptions.rowData[rowIndex];
+                var obj = this.createDataRow(this.gridOptions.rowData[rowIndex], rowIndex);
                 if (obj.center) {
                     arrCenter.push(obj.center);
                 }
                 if (obj.left) {
                     arrLeft.push(obj.left);
                 }
-            }, this);
+            }
         }
         if (arrLeft.length > 0) {
             this.tableBodyLeft.innerHTML = arrLeft.join('');
@@ -288,7 +308,6 @@ var Grid = (function () {
         var currentTop = 0;
         var headerContainerInner = this.headerContainerInnerCenter;
         var bodyContainerYscrollLeft = this.bodyContainerYscrollLeft;
-        // var bodyContainerYscrollLeft = this.bodyContainerLeft;
         var onScrollEvent = function (event) {
             var scrollLeft = event.currentTarget.scrollLeft;
             var scrollTop = event.currentTarget.scrollTop;

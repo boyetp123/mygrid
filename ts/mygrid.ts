@@ -25,8 +25,6 @@ class Grid {
 	bodyContainerYscrollLeft:any; 
 	tableBodyLeft:any;	
 	
-	
-	
 	constructor(selector, gridOptions) {
 		this.gridContainer = document.querySelector(selector);
 		this.setUpProperties(gridOptions)
@@ -148,12 +146,12 @@ class Grid {
 		this.gridOptions.rowHeight = gridOptions.rowHeight || '30px';			
 		this.gridOptions.pinnedLeftCount = gridOptions.pinnedLeftCount || 0;
 		this.gridOptions.pinnedRightCount =  gridOptions.pinnedRightCount || 0;
+		this.gridOptions.flexRow =  gridOptions.flexRow || false;		
 	}
 	setUpAPI(){
 		this.gridOptions.api = {
 			setDataRow : this.setDataRow.bind(this)
-		};
-		
+		};		
 	}
 	setColumnDefs(colDefs:ColumnDef[]){
 		this.columnDefs = colDefs.map(function(colDef:ColumnDef){
@@ -174,8 +172,7 @@ class Grid {
 		let arrLeft:Array<string> = [];
 		let pinnedLeftCount = this.gridOptions.pinnedLeftCount
 		
-		if (this.gridOptions.columnDefs){
-			
+		if (this.gridOptions.columnDefs){			
 			this.columnDefs.forEach((colDef, colIdx)=>{
 				if (pinnedLeftCount - 1 >= colIdx){
 					arrLeft.push( this.createHeaderCell(colDef, colIdx));					
@@ -183,11 +180,6 @@ class Grid {
 					arrCenter.push( this.createHeaderCell(colDef, colIdx));
 				}
 			},this);
-			
-			// arrCenter = this.columnDefs.map((colDef, colIdx)=>{
-			// 	return this.createHeaderCell(colDef, colIdx);
-			// },this);
-			
 		}
 		if (arrLeft.length > 0) {
 			this.tableHeaderLeft.innerHTML = '<tr>' + arrLeft.join('') + '</tr>';
@@ -197,21 +189,29 @@ class Grid {
 	}
 	createHeaderCell( colDef:ColumnDef, colIdx:number ){
 		let styleArr:Array<string>=[];
+		let classArr:Array<string>=[];
+		
 		if (colDef.width){
 			styleArr.push('width:'+colDef.width + '');
 		}
-		
-		return '<th style="' +styleArr.join(';')+ '" col-idx="'+colIdx+'">'+ (colDef.headerName || colDef.field) +'</th>';
+		classArr.push( AlignmentClasses[colDef.type.toUpperCase() ] );
+		return '<th class="' + classArr.join(' ') + '" style="' +styleArr.join(';')+ '" col-idx="'+colIdx+'">'+
+					'<div style="' +styleArr.join(';')+ '" >'+ 
+						(colDef.headerName || colDef.field) +
+					'</div>'+
+				'</th>';
 	}	
 	createDataCell(row:Object, colDef:ColumnDef, rowIndex:number, colIndex:number, isFirst:boolean){
 		let val =row[ <string>colDef.field ];
 		let styleArr:Array<string>=[];
+		let classArr:Array<string>=[];
 		if (colDef.width){
 			styleArr.push('width:'+colDef.width + '');
 		}
 		if (isFirst && this.gridOptions.rowHeight){
 			styleArr.push('height:'+this.gridOptions.rowHeight);
 		}
+		classArr.push( AlignmentClasses[colDef.type.toUpperCase() ]);
 				
 		if (colDef.hasOwnProperty('cellFormatter') && typeof(colDef.cellFormatter) == 'function' ){
 			let params = {
@@ -223,23 +223,19 @@ class Grid {
 		} else if (colDef.type === 'number') {
 			val = numeral(val).format( colDef.format || '0,0.0000');
 		} 
-		return  '<td style="'+ styleArr.join(';') +'" col-idx="' +colIndex+ '">' + val + '</td>'; 		
+		return  '<td class="' + classArr.join(' ') + '" style="'+ styleArr.join(';') +'" col-idx="' +colIndex+ '">'+
+					'<div style="'+ styleArr.join(';') +'">' + 
+						val +
+					 '</div>'+
+				'</td>';
 	}
 	createDataRow(row:Object, rowIndex:number){
-		
-		// let rowStr:string = this.columnDefs.map((colDef:ColumnDef, colIndex)=>{
-		// 	return this.createDataCell(row, colDef, rowIndex, colIndex);
-		// },this).join('');
 		let styleArr:Array<string> = [];
-		// styleArr.push('height:'+this.gridOptions.rowHeight);
-		// return '<tr style="'+styleArr.join(';')+'" r-idx="'+rowIndex+'">' + rowStr +'</tr>';
-		
 		let arrCenter:Array<string> = [];
 		let arrLeft:Array<string> = [];
 		let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
 		let returnObj:any={};
 		let rowStr:string='';
-
 		this.columnDefs.forEach((colDef, colIdx)=>{
 			if (pinnedLeftCount - 1 >= colIdx){
 				rowStr = this.createDataCell(row, colDef, rowIndex, colIdx , colIdx === 0);			
@@ -262,37 +258,54 @@ class Grid {
 		let pinnedLeftCount = this.gridOptions.pinnedLeftCount
 		let tableBodyLeft = this.tableBodyLeft;
 		let tableBodyCenter = this.tableBodyCenter;
+		let tdsLeft = Array.prototype.slice.call( this.tableBodyLeft.querySelectorAll('tbody > tr > td') , 0 );
+		let tdsCenter = Array.prototype.slice.call(this.tableBodyCenter.querySelectorAll('tbody > tr > td'), 0);
+		
+		let len = 200; // trsLeft.length;
+		var startTime = (new Date()).getTime();
+		
+		for(let i=0; i < len; i++){
+			let tdleft = tdsLeft[i];
+			let tdCenter = tdsCenter[i];
+			let lH = tdleft.offsetHeight ;
+			let cH = tdCenter.offsetHeight;
+			
+			if (tdleft && tdCenter && lH !== cH ){
+				let maxHeight = Math.max( cH , lH );
+				tdleft.style.height =  tdCenter.style.height = maxHeight + 'px';
+			}			
+		}
+			
+		var endTime = (new Date()).getTime();
+		
+		console.info('using array total time for ' + len + ' records ' + ( (endTime - startTime)/1000 ) + ' secs');
+	}
+	equalizeBodyHeights1(){
+		let pinnedLeftCount = this.gridOptions.pinnedLeftCount
+		let tableBodyLeft = this.tableBodyLeft;
+		let tableBodyCenter = this.tableBodyCenter;
 		let trsLeft = tableBodyLeft.querySelectorAll('tbody > tr');
 		let trsCenter = tableBodyCenter.querySelectorAll('tbody > tr');
 		let len = 200; // trsLeft.length;
+		
 		// return;
 		// debugger;
-		setTimeout(function(){
-			for(let i=0; i < len; i++){
-				let tdleft = trsLeft.item(i).children[0];
-				let tdCenter = trsCenter.item(i).children[0];
-				
-				if (tdleft && tdCenter){
-					let maxHeight = Math.max( tdCenter.offsetHeight , tdCenter.offsetHeight );
-					tdleft.style.height =  tdCenter.style.height = maxHeight + 'px';
-				}			
-			}
+		var startTime = (new Date()).getTime();
+		for(let i=0; i < len; i++){
+			let tdleft = trsLeft.item(i).children[0];
+			let tdCenter = trsCenter.item(i).children[0];
+			let lH = tdleft.offsetHeight ;
+			let cH = tdCenter.offsetHeight;
 			
-		},20);
+			if (tdleft && tdCenter && lH !== cH ){
+				let maxHeight = Math.max( cH , lH );
+				tdleft.style.height =  tdCenter.style.height = maxHeight + 'px';
+			}			
+		}
+			
+		var endTime = (new Date()).getTime();
 		
-		
-		// for(let i =0 ; i < len ; i++){
-		// 	let ltr = trsLeft.item(i);
-		// 	let lftd = ltr.children[0]; // querySelector('td:first');
-		// 	let rIdx = ltr.getAttribute('r-idx');
-		// 	let centerTr = tableBodyCenter.querySelector('tbody > tr[r-idx="'+ rIdx+'"]');
-		// 	let cfTd = centerTr.children[0]; //.querySelector('td:first');
-		// 	if (cfTd && lftd){
-		// 		let maxHeight = Math.max( cfTd.offsetHeight , lftd.offsetHeight );
-		// 		cfTd.style.height =  lftd.style.height = maxHeight + 'px';
-		// 	}
-		// 	console.info('equalizeBodyHeights i = ' + i + ' of  ' + len);
-		// }
+		console.info('direct total time for ' + len + ' records ' + ( (endTime - startTime)/1000 ) + ' secs');
 	}
 	createBodyData(){
 		let arrCenter:Array<string> = [];
@@ -300,15 +313,27 @@ class Grid {
 		let pinnedLeftCount = this.gridOptions.pinnedLeftCount
 		
 		if (this.gridOptions.rowData.length > 0){
-			this.gridOptions.rowData.forEach((row:Object, rowIndex:number)=>{
-				let obj = this.createDataRow(row, rowIndex);
+			
+			for(let rowIndex=0; rowIndex < 200; rowIndex++){
+				// let row = this.gridOptions.rowData[rowIndex];
+				let obj = this.createDataRow( this.gridOptions.rowData[rowIndex] , rowIndex);
 				if (obj.center){
 					arrCenter.push(obj.center)
 				} 
 				if (obj.left){
 					arrLeft.push(obj.left)
 				}
-			},this);			
+			}
+			
+			// this.gridOptions.rowData.forEach((row:Object, rowIndex:number)=>{
+			// 	let obj = this.createDataRow(row, rowIndex);
+			// 	if (obj.center){
+			// 		arrCenter.push(obj.center)
+			// 	} 
+			// 	if (obj.left){
+			// 		arrLeft.push(obj.left)
+			// 	}
+			// },this);			
 		}
 		if (arrLeft.length > 0){
 			this.tableBodyLeft.innerHTML =arrLeft.join('');
@@ -348,8 +373,6 @@ class Grid {
 		let currentTop = 0;
 		var headerContainerInner = this.headerContainerInnerCenter;
 		var bodyContainerYscrollLeft = this.bodyContainerYscrollLeft;
-		// var bodyContainerYscrollLeft = this.bodyContainerLeft;
-		
 		var onScrollEvent = function(event) {
 			let scrollLeft = event.currentTarget.scrollLeft;
 			let scrollTop = event.currentTarget.scrollTop;
@@ -362,7 +385,7 @@ class Grid {
 				currentTop = scrollTop;
 				bodyContainerYscrollLeft.style.top = (scrollTop  * -1 ) + 'px';		
 				// console.info('scrollTop = ',scrollTop, bodyContainerYscrollLeft.scrollTop);
-			}
+			}				
 		}
 		this.bodyContainerCenter.addEventListener("scroll",onScrollEvent.bind(this)); 
 	}

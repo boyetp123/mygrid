@@ -20,6 +20,10 @@ div.mygrid div.mygrid-center div.mygrid-header {
 	overflow: hidden;
 }
 
+div.mygrid-body-y-scroll > table > tbody > tr > td > div{
+	overflow: hidden;
+}
+
 div.mygrid-left div.mygrid-body{
 	overflow: hidden;
 }
@@ -55,4 +59,12 @@ div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table > tbody > tr > td
 	border:1px solid black;	
 }
 
-		
+.text-right{
+	text-align: right;
+}
+.text-left{
+	text-align: left;	
+}
+.text-center{
+	text-align: center;		
+}

@@ -32,24 +32,15 @@
                 {headerName: "Athlete", field: "athlete", width: '250px', sort: 'desc'},
                 {headerName: "Age", field: "age", width: '90px'},
                 {headerName: "Country", field: "country", width: '120px'},
-                {headerName: "Year", field: "year", width: '90px', unSortIcon: true},
-                {headerName: "Date", field: "date", width: '110px', comparator: dateComparator},
+                {headerName: "Year", field: "year", width: '90px', unSortIcon: true },
+                {headerName: "Date", field: "date", width: '110px', comparator: dateComparator, type:'date'},
                 {headerName: "Sport", field: "sport", width: '200px'},
-                {headerName: "Gold", field: "gold", width: '100px'},
-                {headerName: "Silver", field: "silver", width: '100px'},
-                {headerName: "Bronze", field: "bronze", width: '100px'},
-                {headerName: "Total", field: "total", width: '100px'}
+                {headerName: "Gold", field: "gold", width: '100px', type:'number', format:'0,0.00'},
+                {headerName: "Silver", field: "silver", width: '100px', type:'number', format:'0,0.00'},
+                {headerName: "Bronze", field: "bronze", width: '100px', type:'number', format:'0,0.00'},
+                {headerName: "Total", field: "total", width: '100px', type:'number', format:'0,0.00'}
             ];
-            
-            // var rowData = [
-            //     {make: "Toyota", model: "Celica", price: 35000,trim:'ELdfgdfgdfg'},
-            //     {make: "Ford", model: "Mondeo", price: 32000,trim:'ELdfgdfgdfg'},
-            //     {make: "Porsche", model: "Boxter", price: 72000,trim:'ELdfgdfgdfg'},
-            //     {make: "Honda", model: "Prelude", price: 35000,trim:'ELdfgdfgdfg'},
-            //     {make: "Bugatti", model: "Veyron", price: 32000,trim:'ELdfgdfgdfg'},
-            //     {make: "Vokswage", model: "Jetta", price: 72000,trim:'ELdfgdfgdfg'}
-            // ];
-            
+                        
             var gridOptions = {
                 columnDefs: columnDefs,
                 rowData: [],
