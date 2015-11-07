@@ -106,8 +106,7 @@ class Grid {
 		
 		this.bodyContainerLeft = this.theGridLeft.querySelector('div.mygrid-body'); 
 		this.bodyContainerYscrollLeft = this.bodyContainerLeft.querySelector('div.mygrid-body-y-scroll'); 
-		this.tableBodyLeft = this.bodyContainerYscrollLeft.querySelector('table > tbody');
-		
+		this.tableBodyLeft = this.bodyContainerYscrollLeft.querySelector('table > tbody');		
 		
 		// center pane
 		this.theGridTdCenterPane  = this.theGrid.querySelector('td.center-pane');
@@ -127,7 +126,9 @@ class Grid {
 		this.theGrid.style.width = gridOptions.width || 'auto';
 		this.theGrid.style.height = !gridOptions.disableVerticalScroll ?( this.gridOptions.height || 'auto') : 'auto';
 		let totalGridWidth = this.theGrid.offsetWidth;
-		let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+		// let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+		let pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 :  this.gridOptions.pinnedLeftCount;;
+		
 		let totalLeftWidth = 0;		
 		if (pinnedLeftCount > 0){
 			this.theGridTdLeftPane.style.display = '';
@@ -154,7 +155,7 @@ class Grid {
 		this.gridOptions.pinnedRightCount =  gridOptions.pinnedRightCount || 0;
 		this.gridOptions.flexRow =  gridOptions.flexRow || false;
 		this.gridOptions.disableVerticalScroll = gridOptions.disableVerticalScroll || false;
-		this.gridOptions.disableHorizontalScroll =  gridOptions.disableVerticalScroll || false;
+		this.gridOptions.disableHorizontalScroll =  gridOptions.disableHorizontalScroll || false;
 	}
 	setUpAPI(){
 		this.gridOptions.api = {
@@ -178,7 +179,8 @@ class Grid {
 	createHeader(){
 		let arrCenter:Array<string> = [];
 		let arrLeft:Array<string> = [];
-		let pinnedLeftCount = this.gridOptions.pinnedLeftCount
+		// let pinnedLeftCount = this.gridOptions.pinnedLeftCount
+		let pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 :  this.gridOptions.pinnedLeftCount;;
 		
 		if (this.gridOptions.columnDefs){			
 			this.columnDefs.forEach((colDef, colIdx)=>{
@@ -249,11 +251,11 @@ class Grid {
 		let styleArr:Array<string> = [];
 		let arrCenter:Array<string> = [];
 		let arrLeft:Array<string> = [];
-		let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+		let pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 :  this.gridOptions.pinnedLeftCount;;
 		let returnObj:any={};
 		let rowStr:string='';
 		this.columnDefs.forEach((colDef, colIdx)=>{
-			if (pinnedLeftCount - 1 >= colIdx){
+			if (pinnedLeftCount - 1 >= colIdx ){
 				rowStr = this.createDataCell(row, colDef, rowIndex, colIdx , colIdx === 0);			
 				arrLeft.push( rowStr );
 			} else {
@@ -349,7 +351,8 @@ class Grid {
 			// 	if (obj.left){
 			// 		arrLeft.push(obj.left)
 			// 	}
-			// },this);			
+			// },this);	
+				
 		}
 		if (arrLeft.length > 0){
 			this.tableBodyLeft.innerHTML =arrLeft.join('');

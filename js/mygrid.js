@@ -93,7 +93,9 @@ var Grid = (function () {
         this.theGrid.style.width = gridOptions.width || 'auto';
         this.theGrid.style.height = !gridOptions.disableVerticalScroll ? (this.gridOptions.height || 'auto') : 'auto';
         var totalGridWidth = this.theGrid.offsetWidth;
-        var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+        // let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+        var pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 : this.gridOptions.pinnedLeftCount;
+        ;
         var totalLeftWidth = 0;
         if (pinnedLeftCount > 0) {
             this.theGridTdLeftPane.style.display = '';
@@ -119,7 +121,7 @@ var Grid = (function () {
         this.gridOptions.pinnedRightCount = gridOptions.pinnedRightCount || 0;
         this.gridOptions.flexRow = gridOptions.flexRow || false;
         this.gridOptions.disableVerticalScroll = gridOptions.disableVerticalScroll || false;
-        this.gridOptions.disableHorizontalScroll = gridOptions.disableVerticalScroll || false;
+        this.gridOptions.disableHorizontalScroll = gridOptions.disableHorizontalScroll || false;
     };
     Grid.prototype.setUpAPI = function () {
         this.gridOptions.api = {
@@ -135,7 +137,9 @@ var Grid = (function () {
         var _this = this;
         var arrCenter = [];
         var arrLeft = [];
-        var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+        // let pinnedLeftCount = this.gridOptions.pinnedLeftCount
+        var pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 : this.gridOptions.pinnedLeftCount;
+        ;
         if (this.gridOptions.columnDefs) {
             this.columnDefs.forEach(function (colDef, colIdx) {
                 if (pinnedLeftCount - 1 >= colIdx) {
@@ -209,7 +213,8 @@ var Grid = (function () {
         var styleArr = [];
         var arrCenter = [];
         var arrLeft = [];
-        var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+        var pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 : this.gridOptions.pinnedLeftCount;
+        ;
         var returnObj = {};
         var rowStr = '';
         this.columnDefs.forEach(function (colDef, colIdx) {
