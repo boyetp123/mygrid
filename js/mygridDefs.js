@@ -26,10 +26,11 @@ AlignmentClasses.set("NUMBER",'text-right');
 AlignmentClasses.set("TEXT",'text-left');
 AlignmentClasses.set("DATE",'text-center');
 */
-var AlignmentClasses = {
+var HAlignmentClasses = {
     NUMBER: 'text-right',
     TEXT: 'text-left',
-    DATE: 'text-center'
+    DATE: 'text-center',
+    DATETIME: 'text-center'
 };
 var ColumnDef = (function () {
     function ColumnDef(field, headerName, type, format, cellFormatter, sortable, width, headerClass, cellClass) {

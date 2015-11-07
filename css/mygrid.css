@@ -1,6 +1,11 @@
 div.mygrid{
 	overflow: hidden;	
 }
+
+div.mygrid > table > tbody > tr > td{
+	vertical-align: top;
+}
+
 div.mygrid  table, div.mygrid table tbody, div.mygrid table td,  div.mygrid table th {
 	table-layout: auto;
 	padding: 0 0 0 0;

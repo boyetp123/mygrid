@@ -27,10 +27,11 @@ AlignmentClasses.set("TEXT",'text-left');
 AlignmentClasses.set("DATE",'text-center');
 */
 
-var AlignmentClasses ={
+var HAlignmentClasses ={
 	NUMBER : 'text-right',
 	TEXT : 'text-left',
-	DATE : 'text-center'
+	DATE : 'text-center',
+	DATETIME : 'text-center'
 }
 
 interface gridOptions {
@@ -44,7 +45,9 @@ interface gridOptions {
 	api:Object,
 	onReady?:Function,
 	rowHeight:string,
-	flexRow?:boolean
+	flexRow?:boolean,
+	disableVerticalScroll:boolean,
+	disableHorizontalScroll:boolean
 	
 }
 

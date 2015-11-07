@@ -15,6 +15,7 @@
         
         <script src="data/olympicAthletes.js"></script>
         <script src="libs/numeral.js"></script>
+        <script src="libs/moment.js"></script>
 
         <!-- link rel="stylesheet" href="css/bootstrap.css"/>
         <link rel="stylesheet" href="css/normalize.css"/>
@@ -30,10 +31,10 @@
             
             var columnDefs = [
                 {headerName: "Athlete", field: "athlete", width: '250px', sort: 'desc'},
-                {headerName: "Age", field: "age", width: '90px'},
+                {headerName: "Age", field: "age", width: '90px' ,type:'number', format:'0'},
                 {headerName: "Country", field: "country", width: '120px'},
-                {headerName: "Year", field: "year", width: '90px', unSortIcon: true },
-                {headerName: "Date", field: "date", width: '110px', comparator: dateComparator, type:'date'},
+                {headerName: "Year", field: "year", width: '90px' ,type:'number', format:'0' },
+                {headerName: "Date", field: "date", width: '110px', type:'text'},
                 {headerName: "Sport", field: "sport", width: '200px'},
                 {headerName: "Gold", field: "gold", width: '100px', type:'number', format:'0,0.00'},
                 {headerName: "Silver", field: "silver", width: '100px', type:'number', format:'0,0.00'},
@@ -48,6 +49,8 @@
                 height:'400px',
                 rowHeight:'40px',
                 pinnedLeftCount:1,
+                disableVerticalScroll:true,
+                disableHorizontalScroll:false,
                 onReady:function(api){
                     api.setDataRow( olympicAthletes );
                 }

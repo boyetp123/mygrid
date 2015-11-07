@@ -1,4 +1,5 @@
 /// <reference path="../libs/numeraljs.d.ts" />
+/// <reference path="../libs/moment.d.ts" />
 /// <reference path="mygridDefs.ts" />
 
 class Grid {
@@ -25,10 +26,24 @@ class Grid {
 	bodyContainerYscrollLeft:any; 
 	tableBodyLeft:any;	
 	
-	constructor(selector, gridOptions) {
+	constructor(selector:string, gridOptions:gridOptions) {
 		this.gridContainer = document.querySelector(selector);
 		this.setUpProperties(gridOptions)
-				
+		this.createGridContainers();
+		
+		// this.theGrid.style.width = this.gridOptions.width || 'auto';
+		// this.theGrid.style.height = this.gridOptions.height || 'auto';
+		this.setUpWidths();
+		
+		this.render();
+		this.setUpAPI();
+		this.setEvents();
+		
+		if (this.gridOptions.onReady){
+			this.gridOptions.onReady(this.gridOptions.api);
+		}
+	}
+	createGridContainers(){
 		this.gridContainer.innerHTML = 
 			'<div class="mygrid">' +
 				'<table>' +
@@ -105,21 +120,12 @@ class Grid {
 		this.bodyContainerYscrollCenter = this.bodyContainerCenter.querySelector('div.mygrid-body-y-scroll'); 
 		this.tableBodyCenter = this.bodyContainerYscrollCenter.querySelector('table > tbody');
 		
-		// this.theGrid.style.width = this.gridOptions.width || 'auto';
-		// this.theGrid.style.height = this.gridOptions.height || 'auto';
-		this.setUpWidths();
-		
-		this.render();
-		this.setUpAPI();
-		this.setEvents();
-		
-		if (this.gridOptions.onReady){
-			this.gridOptions.onReady(this.gridOptions.api);
-		}
 	}
 	setUpWidths(){
-		this.theGrid.style.width = this.gridOptions.width || 'auto';
-		this.theGrid.style.height = this.gridOptions.height || 'auto';
+		let gridOptions = this.gridOptions;
+		
+		this.theGrid.style.width = gridOptions.width || 'auto';
+		this.theGrid.style.height = !gridOptions.disableVerticalScroll ?( this.gridOptions.height || 'auto') : 'auto';
 		let totalGridWidth = this.theGrid.offsetWidth;
 		let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
 		let totalLeftWidth = 0;		
@@ -139,14 +145,16 @@ class Grid {
 		this.bodyContainerCenter.style.width = (totalGridWidth - totalLeftWidth) + 'px';
 	
 	}
-	setUpProperties(gridOptions){
-		this.gridOptions = gridOptions || {};
+	setUpProperties(gridOptions:gridOptions){
+		this.gridOptions = gridOptions;
 		this.gridOptions.rowData = gridOptions.rowData || [];
 		this.setColumnDefs(gridOptions.columnDefs);		
 		this.gridOptions.rowHeight = gridOptions.rowHeight || '30px';			
 		this.gridOptions.pinnedLeftCount = gridOptions.pinnedLeftCount || 0;
 		this.gridOptions.pinnedRightCount =  gridOptions.pinnedRightCount || 0;
-		this.gridOptions.flexRow =  gridOptions.flexRow || false;		
+		this.gridOptions.flexRow =  gridOptions.flexRow || false;
+		this.gridOptions.disableVerticalScroll = gridOptions.disableVerticalScroll || false;
+		this.gridOptions.disableHorizontalScroll =  gridOptions.disableVerticalScroll || false;
 	}
 	setUpAPI(){
 		this.gridOptions.api = {
@@ -185,7 +193,11 @@ class Grid {
 			this.tableHeaderLeft.innerHTML = '<tr>' + arrLeft.join('') + '</tr>';
 		} 
 		this.tableHeaderCenter.innerHTML = '<tr>' + arrCenter.join('') + '</tr>';		
-		this.bodyContainerLeft.style.height = this.bodyContainerCenter.style.height = (this.theGrid.offsetHeight - this.headerContainerCenter.offsetHeight) + 'px';		
+		if (!this.gridOptions.disableVerticalScroll){
+			this.bodyContainerLeft.style.height = this.bodyContainerCenter.style.height = (this.theGrid.offsetHeight - this.headerContainerCenter.offsetHeight) + 'px';				
+		} else {
+			this.bodyContainerLeft.style.height = this.bodyContainerCenter.style.height ='auto';
+		}
 	}
 	createHeaderCell( colDef:ColumnDef, colIdx:number ){
 		let styleArr:Array<string>=[];
@@ -194,7 +206,7 @@ class Grid {
 		if (colDef.width){
 			styleArr.push('width:'+colDef.width + '');
 		}
-		classArr.push( AlignmentClasses[colDef.type.toUpperCase() ] );
+		classArr.push( HAlignmentClasses[colDef.type.toUpperCase() ] );
 		return '<th class="' + classArr.join(' ') + '" style="' +styleArr.join(';')+ '" col-idx="'+colIdx+'">'+
 					'<div style="' +styleArr.join(';')+ '" >'+ 
 						(colDef.headerName || colDef.field) +
@@ -211,7 +223,7 @@ class Grid {
 		if (isFirst && this.gridOptions.rowHeight){
 			styleArr.push('height:'+this.gridOptions.rowHeight);
 		}
-		classArr.push( AlignmentClasses[colDef.type.toUpperCase() ]);
+		classArr.push( HAlignmentClasses[colDef.type.toUpperCase() ]);
 				
 		if (colDef.hasOwnProperty('cellFormatter') && typeof(colDef.cellFormatter) == 'function' ){
 			let params = {
@@ -222,6 +234,10 @@ class Grid {
 			val = colDef.cellFormatter(params);
 		} else if (colDef.type === 'number') {
 			val = numeral(val).format( colDef.format || '0,0.0000');
+		} else if (colDef.type === 'date') {
+			val = moment(val).format( colDef.format || 'MM/DD/YYYY');
+		} else if (colDef.type === 'datetime') {
+			val = moment(val).format( colDef.format || 'MM/DD/YYYY h:mm:ss');
 		} 
 		return  '<td class="' + classArr.join(' ') + '" style="'+ styleArr.join(';') +'" col-idx="' +colIndex+ '">'+
 					'<div style="'+ styleArr.join(';') +'">' + 
