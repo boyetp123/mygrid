@@ -155,7 +155,8 @@ class Grid {
 		this.gridOptions.pinnedRightCount =  gridOptions.pinnedRightCount || 0;
 		this.gridOptions.flexRow =  gridOptions.flexRow || false;
 		this.gridOptions.disableVerticalScroll = gridOptions.disableVerticalScroll || false;
-		this.gridOptions.disableHorizontalScroll =  gridOptions.disableHorizontalScroll || false;
+		this.gridOptions.disableHorizontalScroll = gridOptions.disableHorizontalScroll || false;
+		this.gridOptions.disableSorting = gridOptions.disableSorting || true;
 	}
 	setUpAPI(){
 		this.gridOptions.api = {
@@ -238,11 +239,11 @@ class Grid {
 			val = colDef.cellFormatter(params);
 			classArr = params.classes;
 		} else if (colDef.type === 'number') {
-			val = numeral(val).format( colDef.format || '0,0.0000');
+			val = numeral(val).format( colDef.format);
 		} else if (colDef.type === 'date') {
-			val = moment(val).format( colDef.format || 'MM/DD/YYYY');
+			val = moment(val).format( colDef.format );
 		} else if (colDef.type === 'datetime') {
-			val = moment(val).format( colDef.format || 'MM/DD/YYYY h:mm:ss');
+			val = moment(val).format( colDef.format);
 		} 
 		return  '<td class="' + classArr.join(' ') + '" style="'+ styleArr.join(';') +'" col-idx="' +colIndex+ '">'+
 					'<div style="'+ styleArr.join(';') +'">' + 

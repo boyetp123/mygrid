@@ -34,6 +34,13 @@ var HAlignmentClasses ={
 	DATETIME : 'text-center'
 }
 
+var DefaultFormats = {
+	NUMBER : '0,0.0000',
+	TEXT : '',
+	DATE : 'MM/DD/YYYY',
+	DATETIME :'MM/DD/YYYY h:mm:ss'	
+}
+
 interface gridOptions {
 	columnDefs: Array<ColumnDef>,
 	rowData: Array<Object>,
@@ -47,7 +54,8 @@ interface gridOptions {
 	rowHeight:string,
 	flexRow?:boolean,
 	disableVerticalScroll:boolean,
-	disableHorizontalScroll:boolean
+	disableHorizontalScroll:boolean,
+	disableSorting:boolean
 	
 }
 
@@ -74,9 +82,9 @@ class ColumnDef {
 		this.field = field;
 		this.headerName = headerName; 
 		this.type = type;
-		this.format = format;
+		this.format = format || DefaultFormats[ type.toLowerCase() ];
 		this.cellFormatter = cellFormatter;
-		this.sortable = sortable;
+		this.sortable = sortable || false;
 		this.width  = width;    
 		this.headerClass = headerClass;  
 		this.cellClass =cellClass;   					

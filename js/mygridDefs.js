@@ -32,6 +32,12 @@ var HAlignmentClasses = {
     DATE: 'text-center',
     DATETIME: 'text-center'
 };
+var DefaultFormats = {
+    NUMBER: '0,0.0000',
+    TEXT: '',
+    DATE: 'MM/DD/YYYY',
+    DATETIME: 'MM/DD/YYYY h:mm:ss'
+};
 var ColumnDef = (function () {
     function ColumnDef(field, headerName, type, format, cellFormatter, sortable, width, headerClass, cellClass) {
         if (type === void 0) { type = 'text'; }
@@ -43,7 +49,7 @@ var ColumnDef = (function () {
         this.field = field;
         this.headerName = headerName;
         this.type = type;
-        this.format = format;
+        this.format = format || DefaultFormats[type.toLowerCase()];
         this.cellFormatter = cellFormatter;
         this.sortable = sortable;
         this.width = width;

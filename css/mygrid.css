@@ -43,6 +43,7 @@ div.mygrid  div.mygrid-header > div.mygrid-header-inner > table {
 }
 div.mygrid  div.mygrid-header > div.mygrid-header-inner > table > thead > tr > th {
 	border:1px solid black;
+	vertical-align: bottom;
 }
 
 div.mygrid  div.mygrid-body{
@@ -62,6 +63,7 @@ div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table{
 
 div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table > tbody > tr > td{
 	border:1px solid black;	
+	vertical-align: middle;
 }
 
 .text-right{
