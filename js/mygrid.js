@@ -1,3 +1,4 @@
+/// <reference path="../libs/jquery.d.ts" />
 /// <reference path="../libs/numeraljs.d.ts" />
 /// <reference path="../libs/moment.d.ts" />
 /// <reference path="mygridDefs.ts" />
@@ -23,42 +24,42 @@ var Grid = (function () {
                 '<tbody>' +
                 '<tr>' +
                 '<td class="left-pane" style="display:none">' +
-                '<div class=mygrid-left>' +
-                '<div class=mygrid-header>' +
-                '<div class=mygrid-header-inner>' +
+                '<div class="mygrid-left">' +
+                '<div class="mygrid-header">' +
+                '<div class="mygrid-header-inner">' +
                 '<table><thead><tr></tr></thead></table>' +
                 '</div>' +
                 '</div>' +
-                '<div class=mygrid-body>' +
-                '<div class=mygrid-body-y-scroll>' +
+                '<div class="mygrid-body">' +
+                '<div class="mygrid-body-y-scroll">' +
                 '<table><tbody></tbody></table>' +
                 '</div>' +
                 '</div>' +
                 '</div>' +
                 '</td>' +
                 '<td class="center-pane">' +
-                '<div class=mygrid-center>' +
-                '<div class=mygrid-header>' +
-                '<div class=mygrid-header-inner>' +
+                '<div class="mygrid-center">' +
+                '<div class="mygrid-header">' +
+                '<div class="mygrid-header-inner">' +
                 '<table><thead><tr></tr></thead></table>' +
                 '</div>' +
                 '</div>' +
-                '<div class=mygrid-body>' +
-                '<div class=mygrid-body-y-scroll>' +
+                '<div class="mygrid-body">' +
+                '<div class="mygrid-body-y-scroll">' +
                 '<table><tbody></tbody></table>' +
                 '</div>' +
                 '</div>' +
                 '</div>' +
                 '</td>' +
                 '<td class="right-pane" style="display:none">' +
-                '<div class=mygrid-right>' +
-                '<div class=mygrid-header>' +
-                '<div class=mygrid-header-inner>' +
+                '<div class="mygrid-right">' +
+                '<div class="mygrid-header">' +
+                '<div class="mygrid-header-inner">' +
                 '<table><thead><tr></tr></thead></table>' +
                 '</div>' +
                 '</div>' +
-                '<div class=mygrid-body>' +
-                '<div class=mygrid-body-y-scroll>' +
+                '<div class="mygrid-body">' +
+                '<div class="mygrid-body-y-scroll">' +
                 '<table><tbody></tbody></table>' +
                 '</div>' +
                 '</div>' +
@@ -113,6 +114,7 @@ var Grid = (function () {
         this.bodyContainerCenter.style.width = (totalGridWidth - totalLeftWidth) + 'px';
     };
     Grid.prototype.setUpProperties = function (gridOptions) {
+        var icons = gridOptions.icons || { sortDescending: null, sortAscending: null };
         this.gridOptions = gridOptions;
         this.gridOptions.rowData = gridOptions.rowData || [];
         this.setColumnDefs(gridOptions.columnDefs);
@@ -122,6 +124,13 @@ var Grid = (function () {
         this.gridOptions.flexRow = gridOptions.flexRow || false;
         this.gridOptions.disableVerticalScroll = gridOptions.disableVerticalScroll || false;
         this.gridOptions.disableHorizontalScroll = gridOptions.disableHorizontalScroll || false;
+        this.gridOptions.disableSorting = gridOptions.disableSorting || true;
+        this.gridOptions.icons = {
+            sortDescending: icons.sortDescending || '<scan>&#x2193;</scan>',
+            sortAscending: icons.sortAscending || '<scan>&#x2191;</scan>'
+        };
+        this.gridOptions.icons.sortDescending = '<scan class="sort-descending" style="display:none">' + this.gridOptions.icons.sortDescending + '</scan>';
+        this.gridOptions.icons.sortAscending = '<scan class="sort-ascending" style="display:none">' + this.gridOptions.icons.sortAscending + '</scan>';
     };
     Grid.prototype.setUpAPI = function () {
         this.gridOptions.api = {
@@ -130,7 +139,7 @@ var Grid = (function () {
     };
     Grid.prototype.setColumnDefs = function (colDefs) {
         this.columnDefs = colDefs.map(function (colDef) {
-            return new ColumnDef(colDef.field, colDef.headerName, colDef.type, colDef.format, colDef.cellFormatter, colDef.sortable, colDef.width, colDef.headerClass, colDef.cellClass);
+            return new ColumnDef(colDef.field, colDef.headerName, colDef.type, colDef.format, colDef.cellFormatter, colDef.sortable, colDef.width, colDef.headerClasses, colDef.cellClasses);
         });
     };
     Grid.prototype.createHeader = function () {
@@ -154,6 +163,7 @@ var Grid = (function () {
             this.tableHeaderLeft.innerHTML = '<tr>' + arrLeft.join('') + '</tr>';
         }
         this.tableHeaderCenter.innerHTML = '<tr>' + arrCenter.join('') + '</tr>';
+        // this.tableHeaderCenter.querySelectorAll('span.sort-descending').style.display = 'none';
         if (!this.gridOptions.disableVerticalScroll) {
             this.bodyContainerLeft.style.height = this.bodyContainerCenter.style.height = (this.theGrid.offsetHeight - this.headerContainerCenter.offsetHeight) + 'px';
         }
@@ -164,13 +174,17 @@ var Grid = (function () {
     Grid.prototype.createHeaderCell = function (colDef, colIdx) {
         var styleArr = [];
         var classArr = [];
+        var icons = this.gridOptions.icons;
         if (colDef.width) {
             styleArr.push('width:' + colDef.width + '');
         }
         classArr.push(HAlignmentClasses[colDef.type.toUpperCase()]);
+        if (colDef.sortable) {
+            classArr.push('sortable');
+        }
         return '<th class="' + classArr.join(' ') + '" style="' + styleArr.join(';') + '" col-idx="' + colIdx + '">' +
             '<div style="' + styleArr.join(';') + '" >' +
-            (colDef.headerName || colDef.field) +
+            '<span>' + (colDef.headerName || colDef.field) + '</span>' + icons.sortAscending + icons.sortAscending +
             '</div>' +
             '</th>';
     };
@@ -185,25 +199,37 @@ var Grid = (function () {
             styleArr.push('height:' + this.gridOptions.rowHeight);
         }
         classArr.push(HAlignmentClasses[colDef.type.toUpperCase()]);
+        var params = {
+            data: row,
+            rowIndex: rowIndex,
+            colIndex: colIndex,
+            classes: classArr,
+            colDef: colDef
+        };
+        // types		
         if (colDef.hasOwnProperty('cellFormatter') && typeof (colDef.cellFormatter) == 'function') {
-            var params = {
-                data: row,
-                rowIndex: rowIndex,
-                colIndex: colIndex,
-                classes: classArr,
-                colDef: colDef
-            };
             val = colDef.cellFormatter(params);
             classArr = params.classes;
         }
-        else if (colDef.type === 'number') {
-            val = numeral(val).format(colDef.format);
+        else {
+            if (colDef.type === 'number') {
+                val = numeral(val).format(colDef.format);
+            }
+            else if (colDef.type === 'date') {
+                val = moment(val).format(colDef.format);
+            }
+            else if (colDef.type === 'datetime') {
+                val = moment(val).format(colDef.format);
+            }
         }
-        else if (colDef.type === 'date') {
-            val = moment(val).format(colDef.format);
-        }
-        else if (colDef.type === 'datetime') {
-            val = moment(val).format(colDef.format);
+        // cellclasses
+        if (colDef.hasOwnProperty('cellClasses') && colDef.cellClasses) {
+            if (typeof (colDef.cellClasses) == 'function') {
+                classArr.push(colDef.cellClasses(params));
+            }
+            else {
+                classArr.push(colDef.cellClasses);
+            }
         }
         return '<td class="' + classArr.join(' ') + '" style="' + styleArr.join(';') + '" col-idx="' + colIndex + '">' +
             '<div style="' + styleArr.join(';') + '">' +
@@ -283,26 +309,29 @@ var Grid = (function () {
         console.info('direct total time for ' + len + ' records ' + ((endTime - startTime) / 1000) + ' secs');
     };
     Grid.prototype.createBodyData = function () {
+        var _this = this;
         var arrCenter = [];
         var arrLeft = [];
         var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
-        if (this.gridOptions.rowData.length > 0) {
-            for (var rowIndex = 0; rowIndex < 200; rowIndex++) {
-                // let row = this.gridOptions.rowData[rowIndex];
-                var obj = this.createDataRow(this.gridOptions.rowData[rowIndex], rowIndex);
-                if (obj.center) {
-                    arrCenter.push(obj.center);
-                }
-                if (obj.left) {
-                    arrLeft.push(obj.left);
-                }
+        var rowData = this.gridOptions.rowData.slice(0, 200);
+        // let len  = rowData.length;
+        rowData.forEach(function (row, rowIndex) {
+            var obj = _this.createDataRow(row, rowIndex);
+            if (obj.center) {
+                arrCenter.push(obj.center);
             }
-        }
+            if (obj.left) {
+                arrLeft.push(obj.left);
+            }
+        }, this);
         if (arrLeft.length > 0) {
             this.tableBodyLeft.innerHTML = arrLeft.join('');
         }
         this.tableBodyCenter.innerHTML = arrCenter.join('');
         // this.equalizeBodyHeights();
+        console.info('bodyContainerCenter scrolWidth', this.bodyContainerCenter.scrollWidth, 'offsetWidth', this.bodyContainerCenter.offsetWidth, 'clientWidth', this.bodyContainerCenter.clientWidth);
+        this.bodyContainerLeft.style.height = (this.bodyContainerCenter.clientHeight) + 'px';
+        console.info('theGridCenter scrolWidth', this.theGridCenter.scrollWidth, 'offsetWidth', this.theGridCenter.offsetWidth, 'clientWidth', this.theGridCenter.clientWidth);
     };
     Grid.prototype.alignHeadersAndDataCells = function () {
         this.columnDefs.forEach(function (columnDef, idx, arr) {
@@ -347,6 +376,17 @@ var Grid = (function () {
             }
         };
         this.bodyContainerCenter.addEventListener("scroll", onScrollEvent.bind(this));
+        var onClickHeader = function (event) {
+            var target = event.target;
+            var th = $(target).parents('th')[0];
+            var colIdx = Number(th.getAttribute('col-idx'));
+            var columnDef = this.columnDefs[colIdx];
+            if (columnDef.sortable) {
+                console.info('tagnmae' + target.tagName);
+            }
+        };
+        this.headerContainerInnerLeft.addEventListener("click", onClickHeader.bind(this));
+        this.headerContainerInnerCenter.addEventListener("click", onClickHeader.bind(this));
     };
     return Grid;
 })();

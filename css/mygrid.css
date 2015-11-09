@@ -65,6 +65,9 @@ div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table > tbody > tr > td
 	border:1px solid black;	
 	vertical-align: middle;
 }
+div.mygrid div.mygrid-header th.sortable{
+	cursor: pointer;
+}
 
 .text-right{
 	text-align: right;
@@ -75,3 +78,5 @@ div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table > tbody > tr > td
 .text-center{
 	text-align: center;		
 }
+
+

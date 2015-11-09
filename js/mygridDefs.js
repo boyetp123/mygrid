@@ -39,7 +39,7 @@ var DefaultFormats = {
     DATETIME: 'MM/DD/YYYY h:mm:ss'
 };
 var ColumnDef = (function () {
-    function ColumnDef(field, headerName, type, format, cellFormatter, sortable, width, headerClass, cellClass) {
+    function ColumnDef(field, headerName, type, format, cellFormatter, sortable, width, headerClasses, cellClasses) {
         if (type === void 0) { type = 'text'; }
         if (cellFormatter === void 0) { cellFormatter = null; }
         if (sortable === void 0) { sortable = false; }
@@ -51,10 +51,10 @@ var ColumnDef = (function () {
         this.type = type;
         this.format = format || DefaultFormats[type.toLowerCase()];
         this.cellFormatter = cellFormatter;
-        this.sortable = sortable;
+        this.sortable = sortable || false;
         this.width = width;
-        this.headerClass = headerClass;
-        this.cellClass = cellClass;
+        this.headerClasses = headerClasses;
+        this.cellClasses = cellClasses;
     }
     return ColumnDef;
 })();

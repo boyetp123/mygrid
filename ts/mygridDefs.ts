@@ -41,6 +41,11 @@ var DefaultFormats = {
 	DATETIME :'MM/DD/YYYY h:mm:ss'	
 }
 
+interface IIcons{
+	sortDescending:string,
+	sortAscending:string	
+}
+
 interface gridOptions {
 	columnDefs: Array<ColumnDef>,
 	rowData: Array<Object>,
@@ -51,11 +56,13 @@ interface gridOptions {
 	height: string,
 	api:Object,
 	onReady?:Function,
+	onSort?:Function,
 	rowHeight:string,
 	flexRow?:boolean,
-	disableVerticalScroll:boolean,
-	disableHorizontalScroll:boolean,
-	disableSorting:boolean
+	disableVerticalScroll?:boolean,
+	disableHorizontalScroll?:boolean,
+	disableSorting?:boolean,
+	icons:IIcons
 	
 }
 
@@ -67,8 +74,8 @@ class ColumnDef {
 	cellFormatter:any;
 	sortable:boolean;
 	width :string='auto';    // string like '100px' or '100%' or auto
-	headerClass:any;  // string or function that return string
-	cellClass:any;   // string or function that return string
+	headerClasses:any;  // string or function that return string
+	cellClasses:any;   // string or function that return string
 		
 	constructor(field: string,	
 				headerName: string, 
@@ -77,8 +84,8 @@ class ColumnDef {
 				cellFormatter:Function=null, 
 				sortable:boolean=false,
 				width:string='auto',   
-				headerClass?:any, 
-				cellClass?:any){
+				headerClasses?:any, 
+				cellClasses?:any){
 		this.field = field;
 		this.headerName = headerName; 
 		this.type = type;
@@ -86,9 +93,7 @@ class ColumnDef {
 		this.cellFormatter = cellFormatter;
 		this.sortable = sortable || false;
 		this.width  = width;    
-		this.headerClass = headerClass;  
-		this.cellClass =cellClass;   					
+		this.headerClasses = headerClasses;  
+		this.cellClasses =cellClasses;   					
 	}
-	
-	
 }

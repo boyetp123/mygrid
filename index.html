@@ -16,6 +16,7 @@
         <script src="data/olympicAthletes.js"></script>
         <script src="libs/numeral.js"></script>
         <script src="libs/moment.js"></script>
+        <script src="libs/jquery-1.11.3.js"></script>
 
         <!-- link rel="stylesheet" href="css/bootstrap.css"/>
         <link rel="stylesheet" href="css/normalize.css"/>
@@ -30,8 +31,8 @@
             function dateComparator(){}
             
             var columnDefs = [
-                {headerName: "Athlete", field: "athlete", width: '250px', sort: 'desc'},
-                {headerName: "Age", field: "age", width: '90px' ,type:'number', format:'0'},
+                {headerName: "Athlete", field: "athlete", width: '250px', sortable:true, sort: 'desc'},
+                {headerName: "Age", field: "age", width: '90px' ,type:'number', sortable:true, format:'0'},
                 {headerName: "Country", field: "country", width: '120px'},
                 {headerName: "Year", field: "year", width: '90px' ,type:'number', format:'0' },
                 {headerName: "Date", field: "date", width: '110px', type:'text'},
