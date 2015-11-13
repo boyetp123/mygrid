@@ -15,6 +15,7 @@ div.mygrid  table, div.mygrid table tbody, div.mygrid table td,  div.mygrid tabl
 }
 div.mygrid > table{
 	width:100%;
+	border-collapse: collapse;
 }
 		
 div.mygrid  div.mygrid-header {
@@ -40,10 +41,15 @@ div.mygrid  div.mygrid-header > div.mygrid-header-inner{
 div.mygrid  div.mygrid-header > div.mygrid-header-inner > table {
 	table-layout: fixed;		
 	width:100%;
+    border-collapse: collapse;		
 }
 div.mygrid  div.mygrid-header > div.mygrid-header-inner > table > thead > tr > th {
 	border:1px solid black;
 	vertical-align: bottom;
+	border:none; /*1px solid blue; */
+	padding: none;
+	margin:none;	
+	
 }
 
 div.mygrid  div.mygrid-body{
@@ -59,12 +65,23 @@ div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll{
 div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table{
 	table-layout: fixed;	
 	width:100%;
+	/*border-spacing: 10px;*/
+    border-collapse: collapse;	
 }
 
 div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table > tbody > tr > td{
-	border:1px solid black;	
+	border:none; /*1px solid blue; */
+	padding: none;
+	margin:none;	
 	vertical-align: middle;
 }
+
+div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table > tbody > tr:nth-of-type(odd) > td{
+	background-color:lightblue;
+}
+
+
+
 div.mygrid div.mygrid-header th.sortable{
 	cursor: pointer;
 }

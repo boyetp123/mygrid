@@ -285,6 +285,8 @@ var Grid = (function () {
         var endTime = (new Date()).getTime();
         console.info('using array total time for ' + len + ' records ' + ((endTime - startTime) / 1000) + ' secs');
     };
+    Grid.prototype.sortData = function (field, sortDir) {
+    };
     Grid.prototype.equalizeBodyHeights1 = function () {
         var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
         var tableBodyLeft = this.tableBodyLeft;
@@ -382,7 +384,7 @@ var Grid = (function () {
             var colIdx = Number(th.getAttribute('col-idx'));
             var columnDef = this.columnDefs[colIdx];
             if (columnDef.sortable) {
-                console.info('tagnmae' + target.tagName);
+                console.info('sorting=' + columnDef.field);
             }
         };
         this.headerContainerInnerLeft.addEventListener("click", onClickHeader.bind(this));

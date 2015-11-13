@@ -443,6 +443,11 @@ class Grid {
 			let colIdx = Number(th.getAttribute('col-idx'));
 			let columnDef = this.columnDefs[colIdx];
 			if (columnDef.sortable){
+				if (this.gridOptions.onSort){
+					this.gridOptions.onSort(columnDef.field,'asc');
+				} else {
+					this.sortData(columnDef.field,'asc');
+				}
 				console.info('sorting=' + columnDef.field);
 			}
 		}
