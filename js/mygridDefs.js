@@ -26,22 +26,23 @@ AlignmentClasses.set("NUMBER",'text-right');
 AlignmentClasses.set("TEXT",'text-left');
 AlignmentClasses.set("DATE",'text-center');
 */
-var HAlignmentClasses = {
+var HAlignmentClasses = Object.freeze({
     NUMBER: 'text-right',
     TEXT: 'text-left',
     DATE: 'text-center',
     DATETIME: 'text-center'
-};
-var DefaultFormats = {
+});
+var DefaultFormats = Object.freeze({
     NUMBER: '0,0.0000',
     TEXT: '',
     DATE: 'MM/DD/YYYY',
     DATETIME: 'MM/DD/YYYY h:mm:ss'
-};
+});
 var ColumnDef = (function () {
-    function ColumnDef(field, headerName, type, format, cellFormatter, sortable, width, headerClasses, cellClasses) {
+    function ColumnDef(field, headerName, type, format, cellFormatter, headerCellFormatter, sortable, width, headerClasses, cellClasses) {
         if (type === void 0) { type = 'text'; }
         if (cellFormatter === void 0) { cellFormatter = null; }
+        if (headerCellFormatter === void 0) { headerCellFormatter = null; }
         if (sortable === void 0) { sortable = false; }
         if (width === void 0) { width = 'auto'; }
         this.type = 'text';

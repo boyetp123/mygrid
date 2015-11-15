@@ -139,7 +139,7 @@ var Grid = (function () {
     };
     Grid.prototype.setColumnDefs = function (colDefs) {
         this.columnDefs = colDefs.map(function (colDef) {
-            return new ColumnDef(colDef.field, colDef.headerName, colDef.type, colDef.format, colDef.cellFormatter, colDef.sortable, colDef.width, colDef.headerClasses, colDef.cellClasses);
+            return new ColumnDef(colDef.field, colDef.headerName, colDef.type, colDef.format, colDef.cellFormatter, colDef.headerCellFormatter, colDef.sortable, colDef.width, colDef.headerClasses, colDef.cellClasses);
         });
     };
     Grid.prototype.createHeader = function () {
@@ -173,8 +173,14 @@ var Grid = (function () {
     };
     Grid.prototype.createHeaderCell = function (colDef, colIdx) {
         var styleArr = [];
-        var classArr = [];
+        var classArr = ['grid-hdr-cell'];
         var icons = this.gridOptions.icons;
+        var val = (colDef.headerName || colDef.field);
+        var params = {
+            colIndex: colIdx,
+            classes: classArr,
+            colDef: colDef
+        };
         if (colDef.width) {
             styleArr.push('width:' + colDef.width + '');
         }
@@ -182,16 +188,20 @@ var Grid = (function () {
         if (colDef.sortable) {
             classArr.push('sortable');
         }
+        if (colDef.hasOwnProperty('headerCellFormatter') && typeof (colDef.headerCellFormatter) == 'function') {
+            val = colDef.headerCellFormatter(params);
+            classArr = params.classes;
+        }
         return '<th class="' + classArr.join(' ') + '" style="' + styleArr.join(';') + '" col-idx="' + colIdx + '">' +
             '<div style="' + styleArr.join(';') + '" >' +
-            '<span>' + (colDef.headerName || colDef.field) + '</span>' + icons.sortAscending + icons.sortAscending +
+            '<span>' + val + '</span>' + icons.sortAscending + icons.sortAscending +
             '</div>' +
             '</th>';
     };
     Grid.prototype.createDataCell = function (row, colDef, rowIndex, colIndex, isFirst) {
         var val = row[colDef.field];
         var styleArr = [];
-        var classArr = [];
+        var classArr = ['grid-cell'];
         if (colDef.width) {
             styleArr.push('width:' + colDef.width + '');
         }
@@ -232,7 +242,8 @@ var Grid = (function () {
             }
         }
         return '<td class="' + classArr.join(' ') + '" style="' + styleArr.join(';') + '" col-idx="' + colIndex + '">' +
-            '<div style="' + styleArr.join(';') + '">' +
+            // '<div style="'+ styleArr.join(';') +'">' + 
+            '<div>' +
             val +
             '</div>' +
             '</td>';
@@ -268,9 +279,10 @@ var Grid = (function () {
         var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
         var tableBodyLeft = this.tableBodyLeft;
         var tableBodyCenter = this.tableBodyCenter;
-        var tdsLeft = Array.prototype.slice.call(this.tableBodyLeft.querySelectorAll('tbody > tr > td'), 0);
-        var tdsCenter = Array.prototype.slice.call(this.tableBodyCenter.querySelectorAll('tbody > tr > td'), 0);
-        var len = 200; // trsLeft.length;
+        var centerColStartIdx = pinnedLeftCount;
+        var tdsLeft = Array.prototype.slice.call(this.tableBodyLeft.querySelectorAll('tbody > tr > td[col-idx="0"]'), 0);
+        var tdsCenter = Array.prototype.slice.call(this.tableBodyCenter.querySelectorAll('tbody > tr > td[col-idx="' + centerColStartIdx + '"]'), 0);
+        var len = tdsLeft.length;
         var startTime = (new Date()).getTime();
         for (var i = 0; i < len; i++) {
             var tdleft = tdsLeft[i];
@@ -278,6 +290,7 @@ var Grid = (function () {
             var lH = tdleft.offsetHeight;
             var cH = tdCenter.offsetHeight;
             if (tdleft && tdCenter && lH !== cH) {
+                console.info('equalizing height');
                 var maxHeight = Math.max(cH, lH);
                 tdleft.style.height = tdCenter.style.height = maxHeight + 'px';
             }
@@ -286,36 +299,36 @@ var Grid = (function () {
         console.info('using array total time for ' + len + ' records ' + ((endTime - startTime) / 1000) + ' secs');
     };
     Grid.prototype.sortData = function (field, sortDir) {
-    };
-    Grid.prototype.equalizeBodyHeights1 = function () {
-        var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
-        var tableBodyLeft = this.tableBodyLeft;
-        var tableBodyCenter = this.tableBodyCenter;
-        var trsLeft = tableBodyLeft.querySelectorAll('tbody > tr');
-        var trsCenter = tableBodyCenter.querySelectorAll('tbody > tr');
-        var len = 200; // trsLeft.length;
-        // return;
-        // debugger;
-        var startTime = (new Date()).getTime();
-        for (var i = 0; i < len; i++) {
-            var tdleft = trsLeft.item(i).children[0];
-            var tdCenter = trsCenter.item(i).children[0];
-            var lH = tdleft.offsetHeight;
-            var cH = tdCenter.offsetHeight;
-            if (tdleft && tdCenter && lH !== cH) {
-                var maxHeight = Math.max(cH, lH);
-                tdleft.style.height = tdCenter.style.height = maxHeight + 'px';
+        var sortFun = function (a, b) {
+            var retval = 0;
+            if (sortDir == 'asc') {
+                if (a[field] > b[field]) {
+                    retval = 1;
+                }
+                else if (a[field] < b[field]) {
+                    retval = -1;
+                }
             }
-        }
-        var endTime = (new Date()).getTime();
-        console.info('direct total time for ' + len + ' records ' + ((endTime - startTime) / 1000) + ' secs');
+            else {
+                if (a[field] > b[field]) {
+                    retval = -1;
+                }
+                else if (a[field] < b[field]) {
+                    retval = 1;
+                }
+            }
+            console.info('sorting a.' + field, a[field], 'b.' + field, b[field], 'sortDir', sortDir, 'return', retval);
+            return retval;
+        };
+        var rowData = this.gridOptions.rowData.sort(function (a, b) { return sortFun(a, b); });
+        this.createBodyData(rowData);
     };
-    Grid.prototype.createBodyData = function () {
+    Grid.prototype.createBodyData = function (rowData) {
         var _this = this;
         var arrCenter = [];
         var arrLeft = [];
         var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
-        var rowData = this.gridOptions.rowData.slice(0, 200);
+        // let rowData = this.gridOptions.rowData.slice(0,200);
         // let len  = rowData.length;
         rowData.forEach(function (row, rowIndex) {
             var obj = _this.createDataRow(row, rowIndex);
@@ -330,7 +343,7 @@ var Grid = (function () {
             this.tableBodyLeft.innerHTML = arrLeft.join('');
         }
         this.tableBodyCenter.innerHTML = arrCenter.join('');
-        // this.equalizeBodyHeights();
+        this.equalizeBodyHeights();
         console.info('bodyContainerCenter scrolWidth', this.bodyContainerCenter.scrollWidth, 'offsetWidth', this.bodyContainerCenter.offsetWidth, 'clientWidth', this.bodyContainerCenter.clientWidth);
         this.bodyContainerLeft.style.height = (this.bodyContainerCenter.clientHeight) + 'px';
         console.info('theGridCenter scrolWidth', this.theGridCenter.scrollWidth, 'offsetWidth', this.theGridCenter.offsetWidth, 'clientWidth', this.theGridCenter.clientWidth);
@@ -349,14 +362,15 @@ var Grid = (function () {
     Grid.prototype.render = function () {
         this.createHeader();
         if (this.gridOptions.rowData.length > 0) {
-            this.createBodyData();
+            this.createBodyData(this.gridOptions.rowData);
             this.alignHeadersAndDataCells();
         }
     };
     Grid.prototype.setDataRow = function (dataRow) {
         if (dataRow.length > 0) {
-            this.gridOptions.rowData = dataRow;
-            this.createBodyData();
+            // this.gridOptions.rowData = dataRow;
+            this.gridOptions.rowData = dataRow.slice(0, 200);
+            this.createBodyData(this.gridOptions.rowData);
             this.alignHeadersAndDataCells();
         }
     };
@@ -378,13 +392,22 @@ var Grid = (function () {
             }
         };
         this.bodyContainerCenter.addEventListener("scroll", onScrollEvent.bind(this));
+        var sortingDir = '';
         var onClickHeader = function (event) {
             var target = event.target;
             var th = $(target).parents('th')[0];
             var colIdx = Number(th.getAttribute('col-idx'));
             var columnDef = this.columnDefs[colIdx];
+            sortingDir = sortingDir == 'asc' ? 'desc' : 'asc';
             if (columnDef.sortable) {
-                console.info('sorting=' + columnDef.field);
+                console.info('start sorting=' + columnDef.field + '; dir = ' + sortingDir);
+                if (this.gridOptions.onSort) {
+                    this.gridOptions.onSort(columnDef.field, sortingDir);
+                }
+                else {
+                    this.sortData(columnDef.field, sortingDir);
+                }
+                console.info('done sorting=' + columnDef.field + '; dir = ' + sortingDir);
             }
         };
         this.headerContainerInnerLeft.addEventListener("click", onClickHeader.bind(this));

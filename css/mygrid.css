@@ -20,6 +20,7 @@ div.mygrid > table{
 		
 div.mygrid  div.mygrid-header {
 	width:100%;
+	border-bottom: 1px solid black;
 }
 
 div.mygrid div.mygrid-center div.mygrid-header {
@@ -74,6 +75,10 @@ div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table > tbody > tr > td
 	padding: none;
 	margin:none;	
 	vertical-align: middle;
+}
+div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table > tbody > tr > td.grid-cell,
+div.mygrid  div.mygrid-header > div.mygrid-header-inner > table > thead > tr > th.grid-hdr-cell{
+	padding:3px 2px 3px 8px;
 }
 
 div.mygrid  div.mygrid-body > div.mygrid-body-y-scroll > table > tbody > tr:nth-of-type(odd) > td{

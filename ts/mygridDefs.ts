@@ -27,19 +27,19 @@ AlignmentClasses.set("TEXT",'text-left');
 AlignmentClasses.set("DATE",'text-center');
 */
 
-var HAlignmentClasses ={
+var HAlignmentClasses = Object.freeze({
 	NUMBER : 'text-right',
 	TEXT : 'text-left',
 	DATE : 'text-center',
 	DATETIME : 'text-center'
-}
+});
 
-var DefaultFormats = {
+var DefaultFormats = Object.freeze({
 	NUMBER : '0,0.0000',
 	TEXT : '',
 	DATE : 'MM/DD/YYYY',
 	DATETIME :'MM/DD/YYYY h:mm:ss'	
-}
+});
 
 interface IIcons{
 	sortDescending:string,
@@ -62,7 +62,8 @@ interface gridOptions {
 	disableVerticalScroll?:boolean,
 	disableHorizontalScroll?:boolean,
 	disableSorting?:boolean,
-	icons:IIcons
+	icons:IIcons,
+	equalRowHeights:boolean
 	
 }
 
@@ -71,7 +72,8 @@ class ColumnDef {
 	headerName: string; 
 	type:string='text';
 	format:string;
-	cellFormatter:any;
+	cellFormatter:Function;
+	headerCellFormatter:Function;
 	sortable:boolean;
 	width :string='auto';    // string like '100px' or '100%' or auto
 	headerClasses:any;  // string or function that return string
@@ -82,6 +84,7 @@ class ColumnDef {
 				type:string='text', 
 				format?:string, 
 				cellFormatter:Function=null, 
+				headerCellFormatter:Function=null,
 				sortable:boolean=false,
 				width:string='auto',   
 				headerClasses?:any, 
