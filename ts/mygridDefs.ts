@@ -34,6 +34,17 @@ var HAlignmentClasses = Object.freeze({
 	DATETIME : 'text-center'
 });
 
+var GridHdrClasses = Object.freeze({
+	GRID_HDR_CELL : 'grid-hdr-cell'
+});
+
+var SortClasses = Object.freeze({
+	SORT_DESC  : 'sort-descending',
+	SORT_ASC   : 'sort-ascending',
+	SORT_ICONS : 'sort-icons',
+	SORTABLE   : 'sortable'
+});
+
 var DefaultFormats = Object.freeze({
 	NUMBER : '0,0.0000',
 	TEXT : '',
@@ -43,7 +54,9 @@ var DefaultFormats = Object.freeze({
 
 interface IIcons{
 	sortDescending:string,
-	sortAscending:string	
+	sortAscending:string,
+	groupCollapsed:string, 
+	groupExpanded:string	
 }
 
 interface gridOptions {
@@ -63,8 +76,9 @@ interface gridOptions {
 	disableHorizontalScroll?:boolean,
 	disableSorting?:boolean,
 	icons:IIcons,
-	equalRowHeights:boolean
-	
+	equalRowHeights:boolean,
+	isGrouped:boolean,
+	isDataAlreadyGrouped:boolean
 }
 
 class ColumnDef {

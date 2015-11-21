@@ -32,6 +32,15 @@ var HAlignmentClasses = Object.freeze({
     DATE: 'text-center',
     DATETIME: 'text-center'
 });
+var GridHdrClasses = Object.freeze({
+    GRID_HDR_CELL: 'grid-hdr-cell'
+});
+var SortClasses = Object.freeze({
+    SORT_DESC: 'sort-descending',
+    SORT_ASC: 'sort-ascending',
+    SORT_ICONS: 'sort-icons',
+    SORTABLE: 'sortable'
+});
 var DefaultFormats = Object.freeze({
     NUMBER: '0,0.0000',
     TEXT: '',

@@ -26,23 +26,21 @@ class Grid {
 	bodyContainerLeft:any; 
 	bodyContainerYscrollLeft:any; 
 	tableBodyLeft:any;	
+	hasInitCcompleted:boolean;
 	
 	constructor(selector:string, gridOptions:gridOptions) {
+		this.hasInitCcompleted = false;
 		this.gridContainer = document.querySelector(selector);
 		this.setUpProperties(gridOptions)
 		this.createGridContainers();
-		
-		// this.theGrid.style.width = this.gridOptions.width || 'auto';
-		// this.theGrid.style.height = this.gridOptions.height || 'auto';
-		this.setUpWidths();
-		
+		this.setUpWidths();		
 		this.render();
 		this.setUpAPI();
 		this.setEvents();
-		
 		if (this.gridOptions.onReady){
 			this.gridOptions.onReady(this.gridOptions.api);
 		}
+		this.hasInitCcompleted=true;
 	}
 	createGridContainers(){
 		this.gridContainer.innerHTML = 
@@ -122,8 +120,7 @@ class Grid {
 		
 	}
 	setUpWidths(){
-		let gridOptions = this.gridOptions;
-		
+		let gridOptions = this.gridOptions;		
 		this.theGrid.style.width = gridOptions.width || 'auto';
 		this.theGrid.style.height = !gridOptions.disableVerticalScroll ?( this.gridOptions.height || 'auto') : 'auto';
 		let totalGridWidth = this.theGrid.offsetWidth;
@@ -131,7 +128,7 @@ class Grid {
 		let pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 :  this.gridOptions.pinnedLeftCount;;
 		
 		let totalLeftWidth = 0;		
-		if (pinnedLeftCount > 0){
+		if (pinnedLeftCount > 0 && this.columnDefs.length > 0 ){
 			this.theGridTdLeftPane.style.display = '';
 			for(let i = 0; i <pinnedLeftCount ; i++){
 				totalLeftWidth = Number(this.columnDefs[i].width.replace('px','').replace('%',''));
@@ -148,9 +145,9 @@ class Grid {
 	
 	}
 	setUpProperties(gridOptions:gridOptions){
-		let icons = gridOptions.icons || {sortDescending:null,sortAscending:null};		
+		let icons = gridOptions.icons || {sortDescending:null,sortAscending:null, groupCollapsed:null, groupExpanded:null};		
 		this.gridOptions = gridOptions;
-		this.gridOptions.rowData = gridOptions.rowData || [];
+		this.gridOptions.rowData = gridOptions.rowData || [];				
 		this.setColumnDefs(gridOptions.columnDefs);		
 		this.gridOptions.rowHeight = gridOptions.rowHeight || '30px';			
 		this.gridOptions.pinnedLeftCount = gridOptions.pinnedLeftCount || 0;
@@ -160,21 +157,26 @@ class Grid {
 		this.gridOptions.disableHorizontalScroll = gridOptions.disableHorizontalScroll || false;
 		this.gridOptions.disableSorting = gridOptions.disableSorting || true;
 		this.gridOptions.equalRowHeights = gridOptions.equalRowHeights || false;
+		this.gridOptions.isGrouped  = gridOptions.isGrouped || false;
+		this.gridOptions.isDataAlreadyGrouped = gridOptions.isDataAlreadyGrouped || false;
 		
 		this.gridOptions.icons = {
 			sortDescending: icons.sortDescending || '<scan>&#x2193;</scan>',
-			sortAscending: icons.sortAscending || '<scan>&#x2191;</scan>'
+			sortAscending : icons.sortAscending  || '<scan>&#x2191;</scan>',
+			groupCollapsed: icons.groupCollapsed || '<scan>&gt;</scan>', 
+			groupExpanded : icons.groupExpanded  || '<scan>v</scan>'
 		}
-		
-		this.gridOptions.icons.sortDescending =  '<scan class="sort-descending" style="display:none">' + this.gridOptions.icons.sortDescending + '</scan>';
-		this.gridOptions.icons.sortAscending =  '<scan class="sort-ascending" style="display:none">' + this.gridOptions.icons.sortAscending + '</scan>';
+		this.gridOptions.icons.sortDescending =  '<scan class="'+ SortClasses.SORT_DESC +'" style="display:none">' + this.gridOptions.icons.sortDescending + '</scan>';
+		this.gridOptions.icons.sortAscending =  '<scan class="'+ SortClasses.SORT_ASC +'" style="display:none">' + this.gridOptions.icons.sortAscending + '</scan>';
 	}
 	setUpAPI(){
 		this.gridOptions.api = {
-			setDataRow : this.setDataRow.bind(this)
+			setDataRow : this.setDataRow.bind(this),
+			setColumnDefs : this.setColumnDefs.bind(this)
 		};		
 	}
 	setColumnDefs(colDefs:ColumnDef[]){
+		this.columnDefs=[];
 		this.columnDefs = colDefs.map(function(colDef:ColumnDef){
 			return new ColumnDef( colDef.field,
 						colDef.headerName , 
@@ -188,12 +190,15 @@ class Grid {
 						colDef.cellClasses				
 					);
 		});
+		if (this.hasInitCcompleted){
+			this.setUpWidths();
+			this.render();
+		}
 	}	
 	createHeader(){
 		let arrCenter:Array<string> = [];
 		let arrLeft:Array<string> = [];
-		// let pinnedLeftCount = this.gridOptions.pinnedLeftCount
-		let pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 :  this.gridOptions.pinnedLeftCount;;
+		let pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 :  this.gridOptions.pinnedLeftCount;
 		
 		if (this.gridOptions.columnDefs){			
 			this.columnDefs.forEach((colDef, colIdx)=>{
@@ -218,7 +223,7 @@ class Grid {
 	}
 	createHeaderCell( colDef:ColumnDef, colIdx:number ){
 		let styleArr:Array<string>=[];
-		let classArr:Array<string>=['grid-hdr-cell'];
+		let classArr:Array<string>=[ GridHdrClasses.GRID_HDR_CELL ];
 		let icons = this.gridOptions.icons;
 		let val = (colDef.headerName || colDef.field);
 	
@@ -233,7 +238,7 @@ class Grid {
 		}
 		classArr.push( HAlignmentClasses[colDef.type.toUpperCase() ] );
 		if (colDef.sortable){
-			classArr.push( 'sortable' );
+			classArr.push( SortClasses.SORTABLE  );
 		}
 		if (colDef.hasOwnProperty('headerCellFormatter') && typeof(colDef.headerCellFormatter) == 'function' ){
 			val = colDef.headerCellFormatter(params);
@@ -241,14 +246,22 @@ class Grid {
 		}
 		return '<th class="' + classArr.join(' ') + '" style="' +styleArr.join(';')+ '" col-idx="'+colIdx+'">'+
 					'<div style="' +styleArr.join(';')+ '" >'+ 
-						'<span>'+ val + '</span>' + icons.sortAscending + icons.sortAscending +
+						'<span>'+ val + '</span>' + '<span class="' + SortClasses.SORTABLE + '">' + icons.sortDescending + icons.sortAscending + '</span>' +
 					'</div>'+
 				'</th>';
 	}	
 	createDataCell(row:Object, colDef:ColumnDef, rowIndex:number, colIndex:number, isFirst:boolean){
-		let val =row[ <string>colDef.field ];
+		let val = row.hasOwnProperty(colDef.field)  ? row[ <string>colDef.field ]: '';
 		let styleArr:Array<string>=[];
 		let classArr:Array<string>=['grid-cell'];
+		let isGrouped = this.gridOptions.isGrouped;
+		let isDataAlreadyGrouped = this.gridOptions.isDataAlreadyGrouped;
+		let groupCollapsed = this.gridOptions.icons.groupCollapsed; 
+		let groupExpanded = this.gridOptions.icons.groupExpanded; 
+		let groupedIcon:string = "";
+		if (isGrouped && isDataAlreadyGrouped && colIndex ===0){
+			groupedIcon = '<span class="grouped-icons">' + groupCollapsed + groupExpanded  + '</span>';
+		} 
 		if (colDef.width){
 			styleArr.push('width:'+colDef.width + '');
 		}
@@ -263,12 +276,11 @@ class Grid {
 			classes : classArr,
 			colDef:colDef
 		};
-		
 		// types		
 		if (colDef.hasOwnProperty('cellFormatter') && typeof(colDef.cellFormatter) == 'function' ){
 			val = colDef.cellFormatter(params);
 			classArr = params.classes;
-		} else {
+		} else if (row.hasOwnProperty(colDef.field) ) {
 			if (colDef.type === 'number') {
 				val = numeral(val).format( colDef.format);
 			} else if (colDef.type === 'date') {
@@ -285,30 +297,32 @@ class Grid {
 				classArr.push(colDef.cellClasses);
 			}
 		}
-		
 		return  '<td class="' + classArr.join(' ') + '" style="'+ styleArr.join(';') +'" col-idx="' +colIndex+ '">'+
-					// '<div style="'+ styleArr.join(';') +'">' + 
-					'<div>' + 
-						val +
+					'<div style="'+ styleArr.join(';') +'">' + 
+						groupedIcon + val +
 					 '</div>'+
 				'</td>';
 	}
-	createDataRow(row:Object, rowIndex:number){
+	createDataRow(row:any, rowIndex:number){
 		let styleArr:Array<string> = [];
 		let arrCenter:Array<string> = [];
 		let arrLeft:Array<string> = [];
 		let pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 :  this.gridOptions.pinnedLeftCount;;
 		let returnObj:any={};
 		let rowStr:string='';
+		let isGrouped = this.gridOptions.isGrouped;
+		let isDataAlreadyGrouped = this.gridOptions.isDataAlreadyGrouped;
+	
 		this.columnDefs.forEach((colDef, colIdx)=>{
+			let rowData =  (isGrouped && isDataAlreadyGrouped ) ? row.data : row;
 			if (pinnedLeftCount - 1 >= colIdx ){
-				rowStr = this.createDataCell(row, colDef, rowIndex, colIdx , colIdx === 0);			
+				rowStr = this.createDataCell(rowData, colDef, rowIndex, colIdx , colIdx === 0);			
 				arrLeft.push( rowStr );
 			} else {
-				rowStr = this.createDataCell(row, colDef, rowIndex, colIdx , (colIdx - pinnedLeftCount) === 0 );			
+				rowStr = this.createDataCell(rowData, colDef, rowIndex, colIdx , (colIdx - pinnedLeftCount) === 0 );			
 				arrCenter.push( rowStr );
 			}
-		},this);
+		},this);			
 		
 		if (arrCenter.length > 0){
 			returnObj.center ='<tr style="'+styleArr.join(';')+'" r-idx="'+rowIndex+'">' + arrCenter.join('') +'</tr>';
@@ -371,7 +385,7 @@ class Grid {
 	createBodyData(rowData){
 		let arrCenter:Array<string> = [];
 		let arrLeft:Array<string> = [];
-		let pinnedLeftCount = this.gridOptions.pinnedLeftCount
+		let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
 		// let rowData = this.gridOptions.rowData.slice(0,200);
 		// let len  = rowData.length;
 		rowData.forEach((row:Object, rowIndex:number)=>{
@@ -402,7 +416,7 @@ class Grid {
 			
 	}
 	alignHeadersAndDataCells(){		
-		this.columnDefs.forEach(function(columnDef, idx, arr){
+		this.columnDefs.forEach((columnDef, idx, arr)=>{
 			if (columnDef.width === 'auto'){
 				let th = this.tableHeaderCenter.querySelector('th[col-idx="'+idx+'"]');
 				let td = this.tableBodyCenter.querySelector('td[col-idx="'+idx+'"]');
@@ -419,7 +433,6 @@ class Grid {
 			this.createBodyData(this.gridOptions.rowData);		
 			this.alignHeadersAndDataCells();
 		}
-		
 	}
 	setDataRow(dataRow){
 		if (dataRow.length > 0){			
@@ -458,10 +471,19 @@ class Grid {
 			sortingDir = sortingDir == 'asc' ? 'desc' : 'asc';
 			if (columnDef.sortable){
 				console.info('start sorting=' + columnDef.field +'; dir = ' + sortingDir);
+				let ascDesc = '.' + SortClasses.SORT_ASC +', .' +  SortClasses.SORT_DESC;
+				$(this.headerContainerInnerLeft).find(ascDesc).hide();
+				$(this.headerContainerInnerCenter).find(ascDesc).hide();
+
 				if (this.gridOptions.onSort){
 					this.gridOptions.onSort(columnDef.field,sortingDir);
 				} else {
 					this.sortData(columnDef.field,sortingDir);
+					if (sortingDir === 'asc'){
+						$(th).find('.' + SortClasses.SORT_ASC ).show();
+					} else {
+						$(th).find('.' + SortClasses.SORT_DESC).show();						
+					}
 				}
 				console.info('done sorting=' + columnDef.field +'; dir = ' + sortingDir);
 			}

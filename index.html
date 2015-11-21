@@ -4,6 +4,8 @@
         <title>Angular Test</title>
         <meta http-equiv="X-UA-Compatible" content="IE=EDGE"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/bootstrap.css"/>
+        <link rel="stylesheet" href="css/bootstrap-responsive.css"/>
         <link rel="stylesheet" href="css/mygrid.css"/>
         <style type="text/css">
          /* body > table > tbody > tr > td {
@@ -30,7 +32,7 @@
         <script>
             function dateComparator(){}
             
-            var columnDefs = [
+            var atheleteColumnDefs = [
                 {headerName: "Athlete", field: "athlete", width: '100px', sortable:true, sort: 'desc'},
                 {headerName: "Age", field: "age", width: '90px' ,type:'number', sortable:true, format:'0'},
                 {headerName: "Country", field: "country", width: '120px'},
@@ -42,9 +44,14 @@
                 {headerName: "Bronze", field: "bronze", width: '100px', type:'number', format:'0,0.00'},
                 {headerName: "Total", field: "total", width: '100px', type:'number', format:'0,0.00'}
             ];
-                        
+            var filesColumnDefs = [
+                {headerName: "Name", field: "name", width: '100px', sortable:true, sort: 'desc'},
+                {headerName: "Size", field: "size", width: '90px' ,type:'number', sortable:true, format:'0'},
+                {headerName: "Type", field: "type", width: '120px'},
+                {headerName: "Modified", field: "dateModified", width: '90px' ,type:'text', format:'0' }
+            ];            
             var gridOptions = {
-                columnDefs: columnDefs,
+                columnDefs: [],
                 rowData: [],
                 width:'800px',
                 height:'400px',
@@ -53,29 +60,54 @@
                 disableVerticalScroll:false,
                 disableHorizontalScroll:false,
                 onReady:function(api){
-                    api.setDataRow( olympicAthletes );
+                    // api.setDataRow( olympicAthletes );
                 }
             };
             
             // wait for the document to be loaded, otherwise
             document.addEventListener("DOMContentLoaded", function() {
                 new Grid('#mygrid-test', gridOptions);
+                
                 // var grid = new Grid('#mygrid-test', gridOptions);
                 // gridOptions.api.setDataRow( olympicAthletes );
-                
+                document.querySelector('#loadAthletes').addEventListener('click',function(){
+                    $.ajax('data/olympicAthletes.json',{
+                        success:function(resp){
+                            gridOptions.api.setDataRow(resp.data);
+                        }
+                    });                    
+                });
+                document.querySelector('#loadAthletesDef').addEventListener('click',function(){
+                    gridOptions.isGrouped = false;
+                    gridOptions.isDataAlreadyGrouped = false;
+                    gridOptions.api.setColumnDefs(atheleteColumnDefs);
+                });
+                document.querySelector('#loadFilesDef').addEventListener('click',function(){
+                    gridOptions.api.setColumnDefs(filesColumnDefs);
+                    gridOptions.isGrouped = true;
+                    gridOptions.isDataAlreadyGrouped = true;
+                });
+                document.querySelector('#loadFiles').addEventListener('click',function(){
+                    $.ajax('data/group.json',{
+                        success:function(resp){
+                            gridOptions.api.setDataRow(resp.data);
+                        },
+                        error:function(){
+                            
+                        }
+                    });                    
+                });
             });
-            
-            
         </script>
-
-
-
     </head>
     <body>
        This is My grid
-       <div id="mygrid-test"  class="ag-fresh"></div>
-
-
-
+       <div class="container">
+           <button id="loadAthletesDef">Load Athletes Definition</button>
+           <button id="loadAthletes">Load Athletes</button>
+           <button id="loadFilesDef">Load Files Definition</button>
+           <button id="loadFiles">Load Files</button>
+       </div>
+       <div id="mygrid-test"  class="ag-fresh container"></div>
     </body>
 </html>
