@@ -35,9 +35,9 @@
             var atheleteColumnDefs = [
                 {headerName: "Athlete", field: "athlete", width: '100px', sortable:true, sort: 'desc'},
                 {headerName: "Age", field: "age", width: '90px' ,type:'number', sortable:true, format:'0'},
-                {headerName: "Country", field: "country", width: '120px'},
-                {headerName: "Year", field: "year", width: '90px' ,type:'number', format:'0' },
-                {headerName: "Date", field: "date", width: '110px', type:'text'},
+                {headerName: "Country", field: "country", width: '120px', sortable:true},
+                {headerName: "Year", field: "year", width: '90px' ,type:'number', format:'0', sortable:true },
+                {headerName: "Date", field: "date", width: '110px', type:'text', sortable:true},
                 {headerName: "Sport", field: "sport", width: '200px'},
                 {headerName: "Gold", field: "gold", width: '100px', type:'number', format:'0,0.00'},
                 {headerName: "Silver", field: "silver", width: '100px', type:'number', format:'0,0.00'},
@@ -81,11 +81,13 @@
                     gridOptions.isGrouped = false;
                     gridOptions.isDataAlreadyGrouped = false;
                     gridOptions.api.setColumnDefs(atheleteColumnDefs);
+                    gridOptions.pinnedLeftCount=1;
                 });
                 document.querySelector('#loadFilesDef').addEventListener('click',function(){
                     gridOptions.api.setColumnDefs(filesColumnDefs);
                     gridOptions.isGrouped = true;
                     gridOptions.isDataAlreadyGrouped = true;
+                    gridOptions.pinnedLeftCount=0;
                 });
                 document.querySelector('#loadFiles').addEventListener('click',function(){
                     $.ajax('data/group.json',{
