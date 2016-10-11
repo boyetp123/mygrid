@@ -43,58 +43,58 @@ class Grid {
 		this.hasInitCcompleted=true;
 	}
 	createGridContainers(){
-		this.gridContainer.innerHTML = 
-			'<div class="mygrid">' +
-				'<table>' +
-					'<tbody>' +
-						'<tr>' +
-							'<td class="left-pane" style="display:none">' +
-								'<div class="mygrid-left">' +	
-									'<div class="mygrid-header">' +
-										'<div class="mygrid-header-inner">' +
-											'<table><thead><tr></tr></thead></table>' +
-										'</div>' +
-									'</div>' +
-									'<div class="mygrid-body">' +
-										'<div class="mygrid-body-y-scroll">' +
-											'<table><tbody></tbody></table>'+
-										'</div>' +
-									'</div>' +
-								'</div>' +									
-							'</td>' +
-							'<td class="center-pane">' +
-								'<div class="mygrid-center">' +	
-									'<div class="mygrid-header">' +
-										'<div class="mygrid-header-inner">' +
-											'<table><thead><tr></tr></thead></table>' +
-										'</div>' +
-									'</div>' +
-									'<div class="mygrid-body">' +
-										'<div class="mygrid-body-y-scroll">' +
-											'<table><tbody></tbody></table>'+
-										'</div>' +
-									'</div>' +
-								'</div>' +									
-							'</td>' +
-							'<td class="right-pane" style="display:none">' +
-								'<div class="mygrid-right">' +	
-									'<div class="mygrid-header">' +
-										'<div class="mygrid-header-inner">' +
-											'<table><thead><tr></tr></thead></table>' +
-										'</div>' +
-									'</div>' +
-									'<div class="mygrid-body">' +
-										'<div class="mygrid-body-y-scroll">' +
-											'<table><tbody></tbody></table>'+
-										'</div>' +
-									'</div>' +
-								'</div>' +									
+			var innerHTMLs = ['<div class="mygrid">' ];
+				innerHTMLs.push( '<table>' );
+					innerHTMLs.push( '<tbody>' );
+						innerHTMLs.push( '<tr>' );
+							innerHTMLs.push( '<td class="left-pane" style="display:none">' );
+								innerHTMLs.push( '<div class="mygrid-left">' );	
+									innerHTMLs.push( '<div class="mygrid-header">' );
+										innerHTMLs.push( '<div class="mygrid-header-inner">' );
+											innerHTMLs.push( '<table><thead><tr></tr></thead></table>' );
+										innerHTMLs.push( '</div>' );
+									innerHTMLs.push( '</div>' );
+									innerHTMLs.push( '<div class="mygrid-body">' );
+										innerHTMLs.push( '<div class="mygrid-body-y-scroll">' );
+											innerHTMLs.push( '<table><tbody></tbody></table>');
+										innerHTMLs.push( '</div>' );
+									innerHTMLs.push( '</div>' );
+								innerHTMLs.push( '</div>' );									
+							innerHTMLs.push( '</td>' );
+							innerHTMLs.push( '<td class="center-pane">' );
+								innerHTMLs.push( '<div class="mygrid-center">' );	
+									innerHTMLs.push( '<div class="mygrid-header">' );
+										innerHTMLs.push( '<div class="mygrid-header-inner">' );
+											innerHTMLs.push( '<table><thead><tr></tr></thead></table>' );
+										innerHTMLs.push( '</div>' );
+									innerHTMLs.push( '</div>' );
+									innerHTMLs.push( '<div class="mygrid-body">' );
+										innerHTMLs.push( '<div class="mygrid-body-y-scroll">' );
+											innerHTMLs.push( '<table><tbody></tbody></table>');
+										innerHTMLs.push( '</div>' );
+									innerHTMLs.push( '</div>' );
+								innerHTMLs.push( '</div>' );									
+							innerHTMLs.push( '</td>' );
+							innerHTMLs.push( '<td class="right-pane" style="display:none">' );
+								innerHTMLs.push( '<div class="mygrid-right">' );	
+									innerHTMLs.push( '<div class="mygrid-header">' );
+										innerHTMLs.push( '<div class="mygrid-header-inner">' );
+											innerHTMLs.push( '<table><thead><tr></tr></thead></table>' );
+										innerHTMLs.push( '</div>' );
+									innerHTMLs.push( '</div>' );
+									innerHTMLs.push( '<div class="mygrid-body">' );
+										innerHTMLs.push( '<div class="mygrid-body-y-scroll">' );
+											innerHTMLs.push( '<table><tbody></tbody></table>');
+										innerHTMLs.push( '</div>' );
+									innerHTMLs.push( '</div>' );
+								innerHTMLs.push( '</div>' );									
 									
-							'</td>'	+
-						'</tr>'	+	
-					'</tbody>' +		
-				'</table>' +
-			'</div>';		
+							innerHTMLs.push( '</td>'	);
+						innerHTMLs.push( '</tr>'	);	
+					innerHTMLs.push( '</tbody>' );		
+				innerHTMLs.push( '</table>' );
+			innerHTMLs.push( '</div>');		
+		this.gridContainer.innerHTML = innerHTMLs.join('');
 		this.theGrid = this.gridContainer.querySelector('div.mygrid');
 		// left pane
 		this.theGridTdLeftPane  = this.theGrid.querySelector('td.left-pane');
@@ -161,13 +161,13 @@ class Grid {
 		this.gridOptions.isDataAlreadyGrouped = gridOptions.isDataAlreadyGrouped || false;
 		
 		this.gridOptions.icons = {
-			sortDescending: icons.sortDescending || '<scan>&#x2193;</scan>',
-			sortAscending : icons.sortAscending  || '<scan>&#x2191;</scan>',
-			groupCollapsed: icons.groupCollapsed || '<scan>&gt;</scan>', 
-			groupExpanded : icons.groupExpanded  || '<scan>v</scan>'
+			sortDescending: icons.sortDescending || '<span>&#x2193;</span>',
+			sortAscending : icons.sortAscending  || '<span>&#x2191;</span>',
+			groupCollapsed: icons.groupCollapsed || '<span>&gt;</span>', 
+			groupExpanded : icons.groupExpanded  || '<span>v</span>'
 		}
-		this.gridOptions.icons.sortDescending =  '<scan class="'+ SortClasses.SORT_DESC +'" style="display:none">' + this.gridOptions.icons.sortDescending + '</scan>';
-		this.gridOptions.icons.sortAscending =  '<scan class="'+ SortClasses.SORT_ASC +'" style="display:none">' + this.gridOptions.icons.sortAscending + '</scan>';
+		this.gridOptions.icons.sortDescending =  '<span class="'+ SortClasses.SORT_DESC +'" style="display:none">' + this.gridOptions.icons.sortDescending + '</span>';
+		this.gridOptions.icons.sortAscending =  '<span class="'+ SortClasses.SORT_ASC +'" style="display:none">' + this.gridOptions.icons.sortAscending + '</span>';
 	}
 	setUpAPI(){
 		this.gridOptions.api = {
@@ -250,16 +250,18 @@ class Grid {
 					'</div>'+
 				'</th>';
 	}	
-	createDataCell(row:Object, colDef:ColumnDef, rowIndex:number, colIndex:number, isFirst:boolean){
+	createDataCell(rowObj:rowObject, colDef:ColumnDef, rowIndex:number, colIndex:number, isFirst:boolean){
+		let row = rowObj.data;
 		let val = row.hasOwnProperty(colDef.field)  ? row[ <string>colDef.field ]: '';
 		let styleArr:Array<string>=[];
 		let classArr:Array<string>=['grid-cell'];
-		let isGrouped = this.gridOptions.isGrouped;
+		let isGrouped = rowObj.group &&  this.gridOptions.isGrouped;
 		let isDataAlreadyGrouped = this.gridOptions.isDataAlreadyGrouped;
-		let groupCollapsed = this.gridOptions.icons.groupCollapsed; 
-		let groupExpanded = this.gridOptions.icons.groupExpanded; 
 		let groupedIcon:string = "";
+
 		if (isGrouped && isDataAlreadyGrouped && colIndex ===0){
+			let groupCollapsed = '<span class="group-collapse" style="display:'+(!rowObj.expanded?'inline':'none')+'">' + this.gridOptions.icons.groupCollapsed + '</span>'; 
+			let groupExpanded =  '<span class="group-expand" style="display:'+(rowObj.expanded?'inline':'none')+'">' + this.gridOptions.icons.groupExpanded + '</span>' ;
 			groupedIcon = '<span class="grouped-icons">' + groupCollapsed + groupExpanded  + '</span>';
 		} 
 		if (colDef.width){
@@ -303,7 +305,7 @@ class Grid {
 					 '</div>'+
 				'</td>';
 	}
-	createDataRow(row:any, rowIndex:number){
+	createDataRow(row:any, rowIndex:number, rowGroupLevel:number, parentRowIndex:number){
 		let styleArr:Array<string> = [];
 		let arrCenter:Array<string> = [];
 		let arrLeft:Array<string> = [];
@@ -312,26 +314,56 @@ class Grid {
 		let rowStr:string='';
 		let isGrouped = this.gridOptions.isGrouped;
 		let isDataAlreadyGrouped = this.gridOptions.isDataAlreadyGrouped;
+	    let pid = row.childIndex + '' + row.level;
+
+		// row.parent = parentRowIndex === 0 ? null : 
 	
 		this.columnDefs.forEach((colDef, colIdx)=>{
-			let rowData =  (isGrouped && isDataAlreadyGrouped ) ? row.data : row;
+			// let rowData =  (isGrouped && isDataAlreadyGrouped ) ? row.data : row;
+			let rowData = row;
 			if (pinnedLeftCount - 1 >= colIdx ){
+				// rowStr = this.createDataCell(rowData, colDef, rowIndex, colIdx , colIdx === 0);			
 				rowStr = this.createDataCell(rowData, colDef, rowIndex, colIdx , colIdx === 0);			
 				arrLeft.push( rowStr );
 			} else {
+				// rowStr = this.createDataCell(rowData, colDef, rowIndex, colIdx , (colIdx - pinnedLeftCount) === 0 );			
 				rowStr = this.createDataCell(rowData, colDef, rowIndex, colIdx , (colIdx - pinnedLeftCount) === 0 );			
 				arrCenter.push( rowStr );
 			}
 		},this);			
 		
 		if (arrCenter.length > 0){
-			returnObj.center ='<tr style="'+styleArr.join(';')+'" r-idx="'+rowIndex+'">' + arrCenter.join('') +'</tr>';
+			returnObj.center ='<tr pid="'+ pid +'" style="'+styleArr.join(';')+'" pr-idx="'+ parentRowIndex +'" lvl="'+ rowGroupLevel +'" r-idx="'+rowIndex+'">' + arrCenter.join('') +'</tr>';
 		}
 		if (arrLeft.length > 0){
-			returnObj.left ='<tr style="'+styleArr.join(';')+'" r-idx="'+rowIndex+'">' + arrLeft.join('') +'</tr>';
+			returnObj.left ='<tr pid="'+ pid +'" style="'+styleArr.join(';')+'" pr-idx="'+ parentRowIndex +'" lvl="'+ rowGroupLevel +'"  r-idx="'+rowIndex+'">' + arrLeft.join('') +'</tr>';
 		}
 		return 	returnObj;	
 	}
+	renderChildrenDataRows(rowData:any, rowGroupLevel:number, parentRowIndex:number){
+		let arrCenter:Array<string> = [];
+		let arrLeft:Array<string> = [];
+		let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+		rowData.children.forEach((row:any, rowIndex:number)=>{
+			let obj = this.createDataRow(row, rowIndex, rowGroupLevel, parentRowIndex);
+			// obj.pid = rowData.childIndex + '' + rowData.level;
+			if (obj.center){
+				arrCenter.push(obj.center)
+			} 
+			if (obj.left){
+				arrLeft.push(obj.left)
+			}
+		},this);	
+				
+		if (arrLeft.length > 0){
+			$(this.tableBodyLeft).append( arrLeft.join('') );
+		}
+		$(this.tableBodyCenter).find('tr[r-idx="'+ rowData.childIndex  +'"][lvl="'+rowData.level+'"]').after(arrCenter.join(''));
+		if (this.gridOptions.equalRowHeights === true){
+			this.equalizeBodyHeights();
+		}
+		this.bodyContainerLeft.style.height = (this.bodyContainerCenter.clientHeight) + 'px'; 
+	}	
 	equalizeBodyHeights(){
 		let pinnedLeftCount = this.gridOptions.pinnedLeftCount
 		let tableBodyLeft = this.tableBodyLeft;
@@ -380,16 +412,16 @@ class Grid {
 			return retval;
 		};
 		var rowData = this.gridOptions.rowData.sort( (a,b) => sortFun(a,b)  ); 
-		this.createBodyData(rowData);
+		this.createBodyData(rowData, 0, 0);
 	}
-	createBodyData(rowData){
+	createBodyData(rowData:any, rowGroupLevel:number, parentRowIndex:number){
 		let arrCenter:Array<string> = [];
 		let arrLeft:Array<string> = [];
 		let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
 		// let rowData = this.gridOptions.rowData.slice(0,200);
 		// let len  = rowData.length;
-		rowData.forEach((row:Object, rowIndex:number)=>{
-			let obj = this.createDataRow(row, rowIndex);
+		rowData.forEach((row:any, rowIndex:number)=>{
+			let obj = this.createDataRow(row, rowIndex, rowGroupLevel, parentRowIndex);
 			if (obj.center){
 				arrCenter.push(obj.center)
 			} 
@@ -405,14 +437,14 @@ class Grid {
 		if (this.gridOptions.equalRowHeights === true){
 			this.equalizeBodyHeights();
 		}
-		console.info('bodyContainerCenter scrolWidth',this.bodyContainerCenter.scrollWidth,
-			'offsetWidth',this.bodyContainerCenter.offsetWidth,
-			'clientWidth',this.bodyContainerCenter.clientWidth);
+		// console.info('bodyContainerCenter scrolWidth',this.bodyContainerCenter.scrollWidth,
+		// 	'offsetWidth',this.bodyContainerCenter.offsetWidth,
+		// 	'clientWidth',this.bodyContainerCenter.clientWidth);
 		this.bodyContainerLeft.style.height = (this.bodyContainerCenter.clientHeight) + 'px'; 
 
-		console.info('theGridCenter scrolWidth',this.theGridCenter.scrollWidth,
-			'offsetWidth',this.theGridCenter.offsetWidth,
-			'clientWidth',this.theGridCenter.clientWidth);
+		// console.info('theGridCenter scrolWidth',this.theGridCenter.scrollWidth,
+		// 	'offsetWidth',this.theGridCenter.offsetWidth,
+		// 	'clientWidth',this.theGridCenter.clientWidth);
 			
 	}
 	alignHeadersAndDataCells(){		
@@ -430,15 +462,49 @@ class Grid {
 	render(){
 		this.createHeader();
 		if (this.gridOptions.rowData.length > 0){
-			this.createBodyData(this.gridOptions.rowData);		
+			this.createBodyData(this.gridOptions.rowData, 0, 0);		
 			this.alignHeadersAndDataCells();
 		}
+	}
+	getRowDataObj(level, rowIndex, parentRowIndex, trDomElem){
+		if (level === 0){
+			return this.gridOptions.rowData[rowIndex];
+		} else {
+			let $tr = $(trDomElem).parents('tr');
+			let $tr1 = $($tr[0]);
+			let level = Number($tr1.attr('lvl') || '0');
+			let rIndex = Number($tr1.attr('r-idx') || '0');
+			let prIndex = Number($tr1.attr('pr-idx') || '0');
+			return ( this.getRowDataObj(level, rIndex, prIndex, $tr[0]) );
+		}
+	}
+	expandCollapseChildren(obj){
+		if(obj.isExpand){
+			let row = this.getRowDataObj(obj.level, obj.rowIndex, obj.parentRowIndex, obj.trDomElem);
+			this.renderChildrenDataRows(row, obj.level + 1, obj.parentRowIndex);
+		} else {
+			this.removeChildrenDataRows();
+		}
+	}
+	removeChildrenDataRows(){
+
+	}
+	processData(rows, parentNode, level){
+		rows.forEach(function(row,idx){
+			row.parent = parentNode;
+			row.level = level;
+			row.childIndex = idx;
+			if ( typeof(row.children) != 'undefined' &&  row.children instanceof Array ){
+				this.processData(row.children, row, level + 1);
+			}
+		},this);
 	}
 	setDataRow(dataRow){
 		if (dataRow.length > 0){			
 			// this.gridOptions.rowData = dataRow;
 			this.gridOptions.rowData = dataRow.slice(0,200) ;
-			this.createBodyData(this.gridOptions.rowData);		
+			this.processData(this.gridOptions.rowData, null, 0);
+			this.createBodyData(this.gridOptions.rowData, 0, 0);		
 			this.alignHeadersAndDataCells();
 		}
 	}
@@ -488,8 +554,56 @@ class Grid {
 				console.info('done sorting=' + columnDef.field +'; dir = ' + sortingDir);
 			}
 		}
+
+
+		this.bodyContainerCenter.addEventListener('click',this.onBodyClick.bind(this));
 		this.headerContainerInnerLeft.addEventListener("click",onClickHeader.bind(this));
 		this.headerContainerInnerCenter.addEventListener("click",onClickHeader.bind(this));
 	}
-		
+	showElement(el){
+		if (el){
+			el.style.display = '';
+		}
+	}
+	hideElement(el){
+		if (el){
+			el.style.display = 'none';
+		}		
+	}
+	parent( elem, until ) {
+		until = until || '';
+		if (elem && (elem.tagName || '').toUpperCase() === until.toUpperCase() ){
+			return elem;
+		} else if (elem && elem.parentNode){
+			return this.parent(elem.parentNode, until);
+		}
+		return null;
+	}
+	onBodyClick(event){
+		let target = event.target;
+		if (target){
+			let $target = $(target);
+			let $tr = $(target).parents('tr');
+			// let tr = this.parent(target,'tr');
+			if ($target.parents('span.grouped-icons').length > 0  ){
+				let p = target.parentNode;
+				let p2  = p.parentNode;
+				let isExpand = false;
+				if (p.classList.contains('group-collapse') || target.classList.contains('group-collapse') ){ // to expand
+					this.hideElement(p2.querySelector('.group-collapse'));
+					this.showElement(p2.querySelector('.group-expand'));
+					isExpand=true;
+				} else if (p.classList.contains('group-expand') || target.classList.contains('group-expand') ){ // to collapsed
+					this.showElement(p2.querySelector('.group-collapse'));
+					this.hideElement(p2.querySelector('.group-expand'));
+					isExpand=false;
+				}
+				let $tr1 = $($tr[0]);
+				let level = Number($tr1.attr('lvl') || '0');
+				let rIndex = Number($tr1.attr('r-idx') || '0');
+				let prIndex = Number($tr1.attr('pr-idx') || '0');
+				this.expandCollapseChildren({isExpand:isExpand,level:level, rowIndex:rIndex, parentRowIndex:prIndex, trDomElem:$tr[0]});
+			}
+		}
+	}
 }

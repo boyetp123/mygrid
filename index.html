@@ -84,10 +84,10 @@
                     gridOptions.pinnedLeftCount=1;
                 });
                 document.querySelector('#loadFilesDef').addEventListener('click',function(){
-                    gridOptions.api.setColumnDefs(filesColumnDefs);
                     gridOptions.isGrouped = true;
                     gridOptions.isDataAlreadyGrouped = true;
                     gridOptions.pinnedLeftCount=0;
+                    gridOptions.api.setColumnDefs(filesColumnDefs);
                 });
                 document.querySelector('#loadFiles').addEventListener('click',function(){
                     $.ajax('data/group.json',{

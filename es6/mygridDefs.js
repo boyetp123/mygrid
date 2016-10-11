@@ -47,13 +47,8 @@ var DefaultFormats = Object.freeze({
     DATE: 'MM/DD/YYYY',
     DATETIME: 'MM/DD/YYYY h:mm:ss'
 });
-var ColumnDef = (function () {
-    function ColumnDef(field, headerName, type, format, cellFormatter, headerCellFormatter, sortable, width, headerClasses, cellClasses) {
-        if (type === void 0) { type = 'text'; }
-        if (cellFormatter === void 0) { cellFormatter = null; }
-        if (headerCellFormatter === void 0) { headerCellFormatter = null; }
-        if (sortable === void 0) { sortable = false; }
-        if (width === void 0) { width = 'auto'; }
+class ColumnDef {
+    constructor(field, headerName, type = 'text', format, cellFormatter = null, headerCellFormatter = null, sortable = false, width = 'auto', headerClasses, cellClasses) {
         this.type = 'text';
         this.width = 'auto'; // string like '100px' or '100%' or auto
         this.field = field;
@@ -66,5 +61,4 @@ var ColumnDef = (function () {
         this.headerClasses = headerClasses;
         this.cellClasses = cellClasses;
     }
-    return ColumnDef;
-}());
+}

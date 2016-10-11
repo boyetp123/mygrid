@@ -13,6 +13,9 @@ div.mygrid  table, div.mygrid table tbody, div.mygrid table td,  div.mygrid tabl
 	width:auto;
 	border:none;
 }
+div.mygrid  table .grouped-icons{
+	cursor: pointer;
+}
 div.mygrid > table{
 	width:100%;
 	border-collapse: collapse;

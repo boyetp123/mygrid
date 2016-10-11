@@ -82,6 +82,13 @@ interface gridOptions {
 	isFrozenheader:boolean
 }
 
+interface rowObject {
+	data:any,
+	group: boolean,
+	expanded: boolean,
+	children: Array<Object>,
+	parent:any
+}
 class ColumnDef {
 	field: string;
 	headerName: string; 
