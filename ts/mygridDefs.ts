@@ -78,7 +78,8 @@ interface gridOptions {
 	icons:IIcons,
 	equalRowHeights:boolean,
 	isGrouped:boolean,
-	isDataAlreadyGrouped:boolean
+	isDataAlreadyGrouped:boolean,
+	isFrozenheader:boolean
 }
 
 class ColumnDef {
