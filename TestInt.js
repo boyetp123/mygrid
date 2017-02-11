@@ -22,7 +22,7 @@ function getDuplicate(str){
 
 console.log( getDuplicate("Bay Area")  )
 
-[25,23,2,5,7,9,4,10,30]
+// [25,23,2,5,7,9,4,10,30]/
 
 function find2Max( arr ){
   

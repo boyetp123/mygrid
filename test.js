@@ -83,4 +83,41 @@ function reverseRecursive(s){
     }
 }
 
-console.log( reverseRecursive('Henry Polangcos') );  
+// console.log( reverseRecursive('Henry Polangcos') );  
+
+function sentenceToCamelCase(str){
+    //const m = /[0-9]*\.?[0-9]+%\s/ig;
+    //const m2 = /^[a-zA-Z]/;
+    // const m2 = /^[a-z]|[A-Z]/g; 
+    // const m3 = /\s[a-zA-Z]/g;
+    const m3 = /^[a-zA-Z]|\s[a-zA-Z]/g;
+    // let matchArr = str.match(m3);
+    return str.replace(m3,(el,idx)=>{
+        return el.trim().toUpperCase();
+    })
+}
+console.log(sentenceToCamelCase('the quick brown fox jump over the lazy dog' ));
+
+function camelCaseToSentence(str){
+    let str2=str
+    const m1 = /[A-Z]/g;
+    str2 = str2.replace(m1, (el,idx)=>{
+        return ' ' + el;
+    })
+    return str2;
+}
+
+// console.log(camelCaseToSentence('theQuickBrownFoxJumpOverTheLazyDog') )
+
+function removeRepeat(str){
+    let prevStr = '';
+    return str.replace(/[a-zA-Z]/g,(el,idx)=>{
+        if (prevStr === el){
+            return ''
+        } else {
+            prevStr = el;
+        }
+        return 
+    })
+// 'the quick brown fox jump over the lazy dog'.match(/^[a-z]/g)
+}

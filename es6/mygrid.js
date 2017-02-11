@@ -2,8 +2,8 @@
 /// <reference path="../libs/numeraljs.d.ts" />
 /// <reference path="../libs/moment.d.ts" />
 /// <reference path="mygridDefs.ts" />
-var Grid = (function () {
-    function Grid(selector, gridOptions) {
+class Grid {
+    constructor(selector, gridOptions) {
         this.hasInitCcompleted = false;
         this.gridContainer = document.querySelector(selector);
         this.setUpProperties(gridOptions);
@@ -17,7 +17,7 @@ var Grid = (function () {
         }
         this.hasInitCcompleted = true;
     }
-    Grid.prototype.createGridContainers = function () {
+    createGridContainers() {
         var innerHTMLs = ['<div class="mygrid">'];
         innerHTMLs.push('<table>');
         innerHTMLs.push('<tbody>');
@@ -88,19 +88,19 @@ var Grid = (function () {
         this.bodyContainerCenter = this.theGridCenter.querySelector('div.mygrid-body');
         this.bodyContainerYscrollCenter = this.bodyContainerCenter.querySelector('div.mygrid-body-y-scroll');
         this.tableBodyCenter = this.bodyContainerYscrollCenter.querySelector('table > tbody');
-    };
-    Grid.prototype.setUpWidths = function () {
-        var gridOptions = this.gridOptions;
+    }
+    setUpWidths() {
+        let gridOptions = this.gridOptions;
         this.theGrid.style.width = gridOptions.width || 'auto';
         this.theGrid.style.height = !gridOptions.disableVerticalScroll ? (this.gridOptions.height || 'auto') : 'auto';
-        var totalGridWidth = this.theGrid.offsetWidth;
+        let totalGridWidth = this.theGrid.offsetWidth;
         // let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
-        var pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 : this.gridOptions.pinnedLeftCount;
+        let pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 : this.gridOptions.pinnedLeftCount;
         ;
-        var totalLeftWidth = 0;
+        let totalLeftWidth = 0;
         if (pinnedLeftCount > 0 && this.columnDefs.length > 0) {
             this.theGridTdLeftPane.style.display = '';
-            for (var i = 0; i < pinnedLeftCount; i++) {
+            for (let i = 0; i < pinnedLeftCount; i++) {
                 totalLeftWidth = Number(this.columnDefs[i].width.replace('px', '').replace('%', ''));
             }
             this.theGridTdLeftPane.style.width = (totalLeftWidth) + 'px';
@@ -112,9 +112,9 @@ var Grid = (function () {
         this.theGridCenter.style.width = (totalGridWidth - totalLeftWidth) + 'px';
         this.headerContainerCenter.style.width = (totalGridWidth - totalLeftWidth) + 'px';
         this.bodyContainerCenter.style.width = (totalGridWidth - totalLeftWidth) + 'px';
-    };
-    Grid.prototype.setUpProperties = function (gridOptions) {
-        var icons = gridOptions.icons || { sortDescending: null, sortAscending: null, groupCollapsed: null, groupExpanded: null };
+    }
+    setUpProperties(gridOptions) {
+        let icons = gridOptions.icons || { sortDescending: null, sortAscending: null, groupCollapsed: null, groupExpanded: null };
         this.gridOptions = gridOptions;
         this.gridOptions.rowData = gridOptions.rowData || [];
         this.setColumnDefs(gridOptions.columnDefs);
@@ -136,14 +136,14 @@ var Grid = (function () {
         };
         this.gridOptions.icons.sortDescending = '<span class="' + SortClasses.SORT_DESC + '" style="display:none">' + this.gridOptions.icons.sortDescending + '</span>';
         this.gridOptions.icons.sortAscending = '<span class="' + SortClasses.SORT_ASC + '" style="display:none">' + this.gridOptions.icons.sortAscending + '</span>';
-    };
-    Grid.prototype.setUpAPI = function () {
+    }
+    setUpAPI() {
         this.gridOptions.api = {
             setDataRow: this.setDataRow.bind(this),
             setColumnDefs: this.setColumnDefs.bind(this)
         };
-    };
-    Grid.prototype.setColumnDefs = function (colDefs) {
+    }
+    setColumnDefs(colDefs) {
         this.columnDefs = [];
         this.columnDefs = colDefs.map(function (colDef) {
             return new ColumnDef(colDef.field, colDef.headerName, colDef.type, colDef.format, colDef.cellFormatter, colDef.headerCellFormatter, colDef.sortable, colDef.width, colDef.headerClasses, colDef.cellClasses);
@@ -152,19 +152,18 @@ var Grid = (function () {
             this.setUpWidths();
             this.render();
         }
-    };
-    Grid.prototype.createHeader = function () {
-        var _this = this;
-        var arrCenter = [];
-        var arrLeft = [];
-        var pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 : this.gridOptions.pinnedLeftCount;
+    }
+    createHeader() {
+        let arrCenter = [];
+        let arrLeft = [];
+        let pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 : this.gridOptions.pinnedLeftCount;
         if (this.gridOptions.columnDefs) {
-            this.columnDefs.forEach(function (colDef, colIdx) {
+            this.columnDefs.forEach((colDef, colIdx) => {
                 if (pinnedLeftCount - 1 >= colIdx) {
-                    arrLeft.push(_this.createHeaderCell(colDef, colIdx));
+                    arrLeft.push(this.createHeaderCell(colDef, colIdx));
                 }
                 else {
-                    arrCenter.push(_this.createHeaderCell(colDef, colIdx));
+                    arrCenter.push(this.createHeaderCell(colDef, colIdx));
                 }
             }, this);
         }
@@ -179,13 +178,13 @@ var Grid = (function () {
         else {
             this.bodyContainerLeft.style.height = this.bodyContainerCenter.style.height = 'auto';
         }
-    };
-    Grid.prototype.createHeaderCell = function (colDef, colIdx) {
-        var styleArr = [];
-        var classArr = [GridHdrClasses.GRID_HDR_CELL];
-        var icons = this.gridOptions.icons;
-        var val = (colDef.headerName || colDef.field);
-        var params = {
+    }
+    createHeaderCell(colDef, colIdx) {
+        let styleArr = [];
+        let classArr = [GridHdrClasses.GRID_HDR_CELL];
+        let icons = this.gridOptions.icons;
+        let val = (colDef.headerName || colDef.field);
+        let params = {
             colIndex: colIdx,
             classes: classArr,
             colDef: colDef
@@ -206,18 +205,18 @@ var Grid = (function () {
             '<span>' + val + '</span>' + '<span class="' + SortClasses.SORTABLE + '">' + icons.sortDescending + icons.sortAscending + '</span>' +
             '</div>' +
             '</th>';
-    };
-    Grid.prototype.createDataCell = function (rowObj, colDef, rowIndex, colIndex, isFirst) {
-        var row = rowObj.data;
-        var val = row.hasOwnProperty(colDef.field) ? row[colDef.field] : '';
-        var styleArr = [];
-        var classArr = ['grid-cell'];
-        var isGrouped = rowObj.group && this.gridOptions.isGrouped;
-        var isDataAlreadyGrouped = this.gridOptions.isDataAlreadyGrouped;
-        var groupedIcon = "";
+    }
+    createDataCell(rowObj, colDef, rowIndex, colIndex, isFirst) {
+        let row = rowObj.data;
+        let val = row.hasOwnProperty(colDef.field) ? row[colDef.field] : '';
+        let styleArr = [];
+        let classArr = ['grid-cell'];
+        let isGrouped = rowObj.group && this.gridOptions.isGrouped;
+        let isDataAlreadyGrouped = this.gridOptions.isDataAlreadyGrouped;
+        let groupedIcon = "";
         if (isGrouped && isDataAlreadyGrouped && colIndex === 0) {
-            var groupCollapsed = '<span class="group-collapse" style="display:' + (!rowObj.expanded ? 'inline' : 'none') + '">' + this.gridOptions.icons.groupCollapsed + '</span>';
-            var groupExpanded = '<span class="group-expand" style="display:' + (rowObj.expanded ? 'inline' : 'none') + '">' + this.gridOptions.icons.groupExpanded + '</span>';
+            let groupCollapsed = '<span class="group-collapse" style="display:' + (!rowObj.expanded ? 'inline' : 'none') + '">' + this.gridOptions.icons.groupCollapsed + '</span>';
+            let groupExpanded = '<span class="group-expand" style="display:' + (rowObj.expanded ? 'inline' : 'none') + '">' + this.gridOptions.icons.groupExpanded + '</span>';
             groupedIcon = '<span class="grouped-icons">' + groupCollapsed + groupExpanded + '</span>';
         }
         if (colDef.width) {
@@ -227,7 +226,7 @@ var Grid = (function () {
             styleArr.push('height:' + this.gridOptions.rowHeight);
         }
         classArr.push(HAlignmentClasses[colDef.type.toUpperCase()]);
-        var params = {
+        let params = {
             data: row,
             rowIndex: rowIndex,
             colIndex: colIndex,
@@ -264,31 +263,30 @@ var Grid = (function () {
             groupedIcon + val +
             '</div>' +
             '</td>';
-    };
-    Grid.prototype.createDataRow = function (row, rowIndex, rowGroupLevel, parentRowIndex) {
-        var _this = this;
-        var styleArr = [];
-        var arrCenter = [];
-        var arrLeft = [];
-        var pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 : this.gridOptions.pinnedLeftCount;
+    }
+    createDataRow(row, rowIndex, rowGroupLevel, parentRowIndex) {
+        let styleArr = [];
+        let arrCenter = [];
+        let arrLeft = [];
+        let pinnedLeftCount = this.gridOptions.disableHorizontalScroll ? 0 : this.gridOptions.pinnedLeftCount;
         ;
-        var returnObj = {};
-        var rowStr = '';
-        var isGrouped = this.gridOptions.isGrouped;
-        var isDataAlreadyGrouped = this.gridOptions.isDataAlreadyGrouped;
-        var pid = row.childIndex + '' + row.level;
+        let returnObj = {};
+        let rowStr = '';
+        let isGrouped = this.gridOptions.isGrouped;
+        let isDataAlreadyGrouped = this.gridOptions.isDataAlreadyGrouped;
+        let pid = row.childIndex + '' + row.level;
         // row.parent = parentRowIndex === 0 ? null : 
-        this.columnDefs.forEach(function (colDef, colIdx) {
+        this.columnDefs.forEach((colDef, colIdx) => {
             // let rowData =  (isGrouped && isDataAlreadyGrouped ) ? row.data : row;
-            var rowData = row;
+            let rowData = row;
             if (pinnedLeftCount - 1 >= colIdx) {
                 // rowStr = this.createDataCell(rowData, colDef, rowIndex, colIdx , colIdx === 0);			
-                rowStr = _this.createDataCell(rowData, colDef, rowIndex, colIdx, colIdx === 0);
+                rowStr = this.createDataCell(rowData, colDef, rowIndex, colIdx, colIdx === 0);
                 arrLeft.push(rowStr);
             }
             else {
                 // rowStr = this.createDataCell(rowData, colDef, rowIndex, colIdx , (colIdx - pinnedLeftCount) === 0 );			
-                rowStr = _this.createDataCell(rowData, colDef, rowIndex, colIdx, (colIdx - pinnedLeftCount) === 0);
+                rowStr = this.createDataCell(rowData, colDef, rowIndex, colIdx, (colIdx - pinnedLeftCount) === 0);
                 arrCenter.push(rowStr);
             }
         }, this);
@@ -299,14 +297,13 @@ var Grid = (function () {
             returnObj.left = '<tr pid="' + pid + '" style="' + styleArr.join(';') + '" pr-idx="' + parentRowIndex + '" lvl="' + rowGroupLevel + '"  r-idx="' + rowIndex + '">' + arrLeft.join('') + '</tr>';
         }
         return returnObj;
-    };
-    Grid.prototype.renderChildrenDataRows = function (rowData, rowGroupLevel, parentRowIndex) {
-        var _this = this;
-        var arrCenter = [];
-        var arrLeft = [];
-        var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
-        rowData.children.forEach(function (row, rowIndex) {
-            var obj = _this.createDataRow(row, rowIndex, rowGroupLevel, parentRowIndex);
+    }
+    renderChildrenDataRows(rowData, rowGroupLevel, parentRowIndex) {
+        let arrCenter = [];
+        let arrLeft = [];
+        let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+        rowData.children.forEach((row, rowIndex) => {
+            let obj = this.createDataRow(row, rowIndex, rowGroupLevel, parentRowIndex);
             // obj.pid = rowData.childIndex + '' + rowData.level;
             if (obj.center) {
                 arrCenter.push(obj.center);
@@ -323,31 +320,31 @@ var Grid = (function () {
             this.equalizeBodyHeights();
         }
         this.bodyContainerLeft.style.height = (this.bodyContainerCenter.clientHeight) + 'px';
-    };
-    Grid.prototype.equalizeBodyHeights = function () {
-        var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
-        var tableBodyLeft = this.tableBodyLeft;
-        var tableBodyCenter = this.tableBodyCenter;
-        var centerColStartIdx = pinnedLeftCount;
-        var tdsLeft = Array.prototype.slice.call(this.tableBodyLeft.querySelectorAll('tbody > tr > td[col-idx="0"]'), 0);
-        var tdsCenter = Array.prototype.slice.call(this.tableBodyCenter.querySelectorAll('tbody > tr > td[col-idx="' + centerColStartIdx + '"]'), 0);
-        var len = tdsLeft.length;
+    }
+    equalizeBodyHeights() {
+        let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+        let tableBodyLeft = this.tableBodyLeft;
+        let tableBodyCenter = this.tableBodyCenter;
+        let centerColStartIdx = pinnedLeftCount;
+        let tdsLeft = Array.prototype.slice.call(this.tableBodyLeft.querySelectorAll('tbody > tr > td[col-idx="0"]'), 0);
+        let tdsCenter = Array.prototype.slice.call(this.tableBodyCenter.querySelectorAll('tbody > tr > td[col-idx="' + centerColStartIdx + '"]'), 0);
+        let len = tdsLeft.length;
         var startTime = (new Date()).getTime();
-        for (var i = 0; i < len; i++) {
-            var tdleft = tdsLeft[i];
-            var tdCenter = tdsCenter[i];
-            var lH = tdleft.offsetHeight;
-            var cH = tdCenter.offsetHeight;
+        for (let i = 0; i < len; i++) {
+            let tdleft = tdsLeft[i];
+            let tdCenter = tdsCenter[i];
+            let lH = tdleft.offsetHeight;
+            let cH = tdCenter.offsetHeight;
             if (tdleft && tdCenter && lH !== cH) {
                 console.info('equalizing height');
-                var maxHeight = Math.max(cH, lH);
+                let maxHeight = Math.max(cH, lH);
                 tdleft.style.height = tdCenter.style.height = maxHeight + 'px';
             }
         }
         var endTime = (new Date()).getTime();
         console.info('using array total time for ' + len + ' records ' + ((endTime - startTime) / 1000) + ' secs');
-    };
-    Grid.prototype.sortData = function (field, sortDir) {
+    }
+    sortData(field, sortDir) {
         var sortFun = function (a, b) {
             var retval = 0;
             if (sortDir == 'asc') {
@@ -369,18 +366,17 @@ var Grid = (function () {
             console.info('sorting a.' + field, a[field], 'b.' + field, b[field], 'sortDir', sortDir, 'return', retval);
             return retval;
         };
-        var rowData = this.gridOptions.rowData.sort(function (a, b) { return sortFun(a, b); });
+        var rowData = this.gridOptions.rowData.sort((a, b) => sortFun(a, b));
         this.createBodyData(rowData, 0, 0);
-    };
-    Grid.prototype.createBodyData = function (rowData, rowGroupLevel, parentRowIndex) {
-        var _this = this;
-        var arrCenter = [];
-        var arrLeft = [];
-        var pinnedLeftCount = this.gridOptions.pinnedLeftCount;
+    }
+    createBodyData(rowData, rowGroupLevel, parentRowIndex) {
+        let arrCenter = [];
+        let arrLeft = [];
+        let pinnedLeftCount = this.gridOptions.pinnedLeftCount;
         // let rowData = this.gridOptions.rowData.slice(0,200);
         // let len  = rowData.length;
-        rowData.forEach(function (row, rowIndex) {
-            var obj = _this.createDataRow(row, rowIndex, rowGroupLevel, parentRowIndex);
+        rowData.forEach((row, rowIndex) => {
+            let obj = this.createDataRow(row, rowIndex, rowGroupLevel, parentRowIndex);
             if (obj.center) {
                 arrCenter.push(obj.center);
             }
@@ -402,51 +398,50 @@ var Grid = (function () {
         // console.info('theGridCenter scrolWidth',this.theGridCenter.scrollWidth,
         // 	'offsetWidth',this.theGridCenter.offsetWidth,
         // 	'clientWidth',this.theGridCenter.clientWidth);
-    };
-    Grid.prototype.alignHeadersAndDataCells = function () {
-        var _this = this;
-        this.columnDefs.forEach(function (columnDef, idx, arr) {
+    }
+    alignHeadersAndDataCells() {
+        this.columnDefs.forEach((columnDef, idx, arr) => {
             if (columnDef.width === 'auto') {
-                var th = _this.tableHeaderCenter.querySelector('th[col-idx="' + idx + '"]');
-                var td = _this.tableBodyCenter.querySelector('td[col-idx="' + idx + '"]');
+                let th = this.tableHeaderCenter.querySelector('th[col-idx="' + idx + '"]');
+                let td = this.tableBodyCenter.querySelector('td[col-idx="' + idx + '"]');
                 td.style.width = th.style.width = 'auto';
-                var maxWidth = Math.max(th.offsetWdth, td.offsetWdth);
+                let maxWidth = Math.max(th.offsetWdth, td.offsetWdth);
                 td.style.width = th.style.width = maxWidth + 'px';
             }
         });
-    };
-    Grid.prototype.render = function () {
+    }
+    render() {
         this.createHeader();
         if (this.gridOptions.rowData.length > 0) {
             this.createBodyData(this.gridOptions.rowData, 0, 0);
             this.alignHeadersAndDataCells();
         }
-    };
-    Grid.prototype.getRowDataObj = function (level, rowIndex, parentRowIndex, trDomElem) {
+    }
+    getRowDataObj(level, rowIndex, parentRowIndex, trDomElem) {
         if (level === 0) {
             return this.gridOptions.rowData[rowIndex];
         }
         else {
-            var $tr = $(trDomElem).parents('tr');
-            var $tr1 = $($tr[0]);
-            var level_1 = Number($tr1.attr('lvl') || '0');
-            var rIndex = Number($tr1.attr('r-idx') || '0');
-            var prIndex = Number($tr1.attr('pr-idx') || '0');
-            return (this.getRowDataObj(level_1, rIndex, prIndex, $tr[0]));
+            let $tr = $(trDomElem).parents('tr');
+            let $tr1 = $($tr[0]);
+            let level = Number($tr1.attr('lvl') || '0');
+            let rIndex = Number($tr1.attr('r-idx') || '0');
+            let prIndex = Number($tr1.attr('pr-idx') || '0');
+            return (this.getRowDataObj(level, rIndex, prIndex, $tr[0]));
         }
-    };
-    Grid.prototype.expandCollapseChildren = function (obj) {
+    }
+    expandCollapseChildren(obj) {
         if (obj.isExpand) {
-            var row = this.getRowDataObj(obj.level, obj.rowIndex, obj.parentRowIndex, obj.trDomElem);
+            let row = this.getRowDataObj(obj.level, obj.rowIndex, obj.parentRowIndex, obj.trDomElem);
             this.renderChildrenDataRows(row, obj.level + 1, obj.parentRowIndex);
         }
         else {
             this.removeChildrenDataRows();
         }
-    };
-    Grid.prototype.removeChildrenDataRows = function () {
-    };
-    Grid.prototype.processData = function (rows, parentNode, level) {
+    }
+    removeChildrenDataRows() {
+    }
+    processData(rows, parentNode, level) {
         rows.forEach(function (row, idx) {
             row.parent = parentNode;
             row.level = level;
@@ -455,8 +450,8 @@ var Grid = (function () {
                 this.processData(row.children, row, level + 1);
             }
         }, this);
-    };
-    Grid.prototype.setDataRow = function (dataRow) {
+    }
+    setDataRow(dataRow) {
         if (dataRow.length > 0) {
             // this.gridOptions.rowData = dataRow;
             this.gridOptions.rowData = dataRow.slice(0, 200);
@@ -464,15 +459,15 @@ var Grid = (function () {
             this.createBodyData(this.gridOptions.rowData, 0, 0);
             this.alignHeadersAndDataCells();
         }
-    };
-    Grid.prototype.setEvents = function () {
-        var currentLeft = 0;
-        var currentTop = 0;
+    }
+    setEvents() {
+        let currentLeft = 0;
+        let currentTop = 0;
         var headerContainerInner = this.headerContainerInnerCenter;
         var bodyContainerYscrollLeft = this.bodyContainerYscrollLeft;
         var onScrollEvent = function (event) {
-            var scrollLeft = event.currentTarget.scrollLeft;
-            var scrollTop = event.currentTarget.scrollTop;
+            let scrollLeft = event.currentTarget.scrollLeft;
+            let scrollTop = event.currentTarget.scrollTop;
             if (currentLeft !== scrollLeft) {
                 currentLeft = scrollLeft;
                 headerContainerInner.style.left = (scrollLeft * -1) + 'px';
@@ -485,14 +480,14 @@ var Grid = (function () {
         this.bodyContainerCenter.addEventListener("scroll", onScrollEvent.bind(this));
         var sortingDir = '';
         var onClickHeader = function (event) {
-            var target = event.target;
-            var th = $(target).parents('th')[0];
-            var colIdx = Number(th.getAttribute('col-idx'));
-            var columnDef = this.columnDefs[colIdx];
+            let target = event.target;
+            let th = $(target).parents('th')[0];
+            let colIdx = Number(th.getAttribute('col-idx'));
+            let columnDef = this.columnDefs[colIdx];
             sortingDir = sortingDir == 'asc' ? 'desc' : 'asc';
             if (columnDef.sortable) {
                 console.info('start sorting=' + columnDef.field + '; dir = ' + sortingDir);
-                var ascDesc = '.' + SortClasses.SORT_ASC + ', .' + SortClasses.SORT_DESC;
+                let ascDesc = '.' + SortClasses.SORT_ASC + ', .' + SortClasses.SORT_DESC;
                 $(this.headerContainerInnerLeft).find(ascDesc).hide();
                 $(this.headerContainerInnerCenter).find(ascDesc).hide();
                 if (this.gridOptions.onSort) {
@@ -513,18 +508,18 @@ var Grid = (function () {
         this.bodyContainerCenter.addEventListener('click', this.onBodyClick.bind(this));
         this.headerContainerInnerLeft.addEventListener("click", onClickHeader.bind(this));
         this.headerContainerInnerCenter.addEventListener("click", onClickHeader.bind(this));
-    };
-    Grid.prototype.showElement = function (el) {
+    }
+    showElement(el) {
         if (el) {
             el.style.display = '';
         }
-    };
-    Grid.prototype.hideElement = function (el) {
+    }
+    hideElement(el) {
         if (el) {
             el.style.display = 'none';
         }
-    };
-    Grid.prototype.parent = function (elem, until) {
+    }
+    parent(elem, until) {
         until = until || '';
         if (elem && (elem.tagName || '').toUpperCase() === until.toUpperCase()) {
             return elem;
@@ -533,17 +528,17 @@ var Grid = (function () {
             return this.parent(elem.parentNode, until);
         }
         return null;
-    };
-    Grid.prototype.onBodyClick = function (event) {
-        var target = event.target;
+    }
+    onBodyClick(event) {
+        let target = event.target;
         if (target) {
-            var $target = $(target);
-            var $tr = $(target).parents('tr');
+            let $target = $(target);
+            let $tr = $(target).parents('tr');
             // let tr = this.parent(target,'tr');
             if ($target.parents('span.grouped-icons').length > 0) {
-                var p = target.parentNode;
-                var p2 = p.parentNode;
-                var isExpand = false;
+                let p = target.parentNode;
+                let p2 = p.parentNode;
+                let isExpand = false;
                 if (p.classList.contains('group-collapse') || target.classList.contains('group-collapse')) {
                     this.hideElement(p2.querySelector('.group-collapse'));
                     this.showElement(p2.querySelector('.group-expand'));
@@ -554,13 +549,12 @@ var Grid = (function () {
                     this.hideElement(p2.querySelector('.group-expand'));
                     isExpand = false;
                 }
-                var $tr1 = $($tr[0]);
-                var level = Number($tr1.attr('lvl') || '0');
-                var rIndex = Number($tr1.attr('r-idx') || '0');
-                var prIndex = Number($tr1.attr('pr-idx') || '0');
+                let $tr1 = $($tr[0]);
+                let level = Number($tr1.attr('lvl') || '0');
+                let rIndex = Number($tr1.attr('r-idx') || '0');
+                let prIndex = Number($tr1.attr('pr-idx') || '0');
                 this.expandCollapseChildren({ isExpand: isExpand, level: level, rowIndex: rIndex, parentRowIndex: prIndex, trDomElem: $tr[0] });
             }
         }
-    };
-    return Grid;
-}());
+    }
+}

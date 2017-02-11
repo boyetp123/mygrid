@@ -78,10 +78,16 @@ interface gridOptions {
 	icons:IIcons,
 	equalRowHeights:boolean,
 	isGrouped:boolean,
-	isDataAlreadyGrouped:boolean,
-	isFrozenheader:boolean
+	isDataAlreadyGrouped:boolean
 }
 
+interface rowObject {
+	data:any,
+	group: boolean,
+	expanded: boolean,
+	children: Array<Object>,
+	parent:any
+}
 class ColumnDef {
 	field: string;
 	headerName: string; 

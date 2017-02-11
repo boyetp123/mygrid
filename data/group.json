@@ -2,7 +2,7 @@
 	"data": [
         {
             "group": true,
-            "expanded": true,
+            "expanded": false,
             "data": {"name": "C:"},
             "children": [
                 {"group": true,
