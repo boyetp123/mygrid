@@ -96,7 +96,7 @@ function sentenceToCamelCase(str){
         return el.trim().toUpperCase();
     })
 }
-console.log(sentenceToCamelCase('the quick brown fox jump over the lazy dog' ));
+// console.log(sentenceToCamelCase('the quick brown fox jump over the lazy dog' ));
 
 function camelCaseToSentence(str){
     let str2=str
@@ -121,3 +121,142 @@ function removeRepeat(str){
     })
 // 'the quick brown fox jump over the lazy dog'.match(/^[a-z]/g)
 }
+
+function pad (l, s) {
+    return (new Array(l + 1)).join(s || ' ');
+}
+
+function lpad(numStr,len, strToPad){
+    numStr = (numStr || '') + '';
+    if (numStr.length < len ){
+        return pad( len - numStr.length, strToPad ) + numStr;
+    }
+    return numStr;
+}
+
+function rpad(numStr,len, strToPad){
+    numStr = (numStr || '') + '';
+    if (numStr.length < len ){
+        return  numStr + pad( len - numStr.length, strToPad ) ;
+    }
+    return numStr;
+}
+
+
+function covertTime(ampmInput){
+    let inArr = ampmInput.split(':');
+    let isPM = ampmInput.indexOf('PM') > -1;
+    let outHr = inArr[0];
+
+    if (isPM ){
+        if (Number(outHr) < 12){
+            outHr = Number(inArr[0]) + 12;
+        }
+    } else {
+        if (Number(outHr) > 11 ){
+            outHr = Number(outHr) - 12;
+        }
+    }
+    return  lpad(outHr,2,'0') + ':' + inArr[1] + ':' + ( inArr[2].replace('AM','').replace('PM','')  );
+
+}
+// console.info( covertTime ('7:05:45AM'));
+// console.info( covertTime ('11:45:54AM'))
+// console.info( covertTime ('12:45:54PM'))
+// console.info( covertTime ('12:00:00AM'))
+
+function bigSum(arr){
+    var sum = 0;
+    arr.forEach((value,idx)=>{
+        sum+= value;
+    } );
+    return sum;
+}
+
+// console.info(  bigSum ( [1001,1002,1003,1004,1005] ) )
+
+
+function diagonalDiff(arr){
+    var dir1=0;
+    var dir2=0;
+
+    arr.forEach((valuearr,idx)=>{
+        console.info(valuearr)
+        valuearr.forEach((val,idx2)=>{
+            console.info(idx === idx2, idx === (valuearr.length - 1) - idx2 )
+            if (idx === idx2 ){
+                dir1 += val; 
+            }
+            if (idx === (valuearr.length - 1) - idx2 ){
+                dir2 += val;            
+            }
+        });
+    })
+    console.info(dir1,dir2)
+    return Math.abs( dir1 - dir2 );
+}
+
+// console.info(diagonalDiff([ [ 11, 2, 4 ], [ 4, 5, 6 ], [ 10, 8, -12 ] ])  )
+
+function getStrLengthInArray(arr){
+    let len=0;
+    arr.forEach( (val,idx)=>{
+        len += val.length;
+    } )
+    return len;
+}
+
+function textJustification(words, L) {
+    let output=[];
+    // let prevWord='';
+    let phrase=[];
+    let arrLen = words.length;
+    let lookAheadWord = '';
+
+    words.forEach( (word, idx, origWords)=>{
+        lookAheadWord='';
+        let tphraseLen = 0;
+        let rspaces = 0;
+        let rspaceWithLookAhead=0;
+        phrase.push(word)
+
+        tphraseLen = getStrLengthInArray( phrase );
+        rspaces = L - tphraseLen;
+
+        if (idx < arrLen -1){
+            lookAheadWord=origWords[idx + 1];
+            rspaceWithLookAhead = rspaces - lookAheadWord.length ;
+        }
+        // phrase.length > 1 &&
+        if (  (rspaces > 1 && rspaces >=  phrase.length) || idx === arrLen -1){
+            if (  rspaceWithLookAhead > 1  &&  rspaceWithLookAhead >=  phrase.length + 1  ){
+                // continue
+            } else {
+                if (phrase.length === 1){
+                    output.push( word + pad( rspaces ,' ')) ;
+                } else {
+                    let d = Math.ceil(rspaces / (phrase.length - 1));
+                    let slen = rspaces;
+                    
+                    let str = phrase.reduce((pv,cv,idx)=>{
+                        let ret = ''
+                        if (idx === phrase.length - 1){
+                            ret = pv + cv;
+                        } else {
+                            ret =  pv + cv + pad( slen < d ? slen : d  ,' ')
+                        }
+                        slen -= d;
+                        slen = slen < 1 ? 1 : slen;
+                        return ret;
+                    }, '')
+                    output.push( str );
+                }
+                phrase=[];
+            }
+        } 
+    });
+    return output;
+}
+// var words = ["This", "is", "an", "example", "of", "text", "justification."] , L =16;
+var words = ["Two", "words."],  L = 9;
+console.info( textJustification( words,L ) )
